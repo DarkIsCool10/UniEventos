@@ -25,6 +25,7 @@ public class CuentaServiceImp {
 
     /**
      * Metodo para crear una cuenta
+     *
      * @param cuentaDTO
      * @return Mensaje de exito cuando se crea una cuenta
      * @throws CuentaException si la cuenta validada por el email ya existe
