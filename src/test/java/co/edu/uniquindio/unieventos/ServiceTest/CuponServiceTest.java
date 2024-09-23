@@ -1,4 +1,4 @@
-package co.edu.uniquindio.unieventos;
+package co.edu.uniquindio.unieventos.ServiceTest;
 
 import co.edu.uniquindio.unieventos.dto.cupon.CrearCuponDTO;
 import co.edu.uniquindio.unieventos.dto.cupon.EditarCuponDTO;
