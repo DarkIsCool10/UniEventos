@@ -121,8 +121,6 @@ public class CuentaServiceImp implements CuentaService {
         //Buscamos la cuenta del usuario que se quiere actualizar
         Optional<Cuenta> optionalCuenta = obtenerCuentaPorId(cuenta.id());
 
-        System.out.println( cuenta.id() );
-
         //Si no se encontró la cuenta del usuario, lanzamos una excepción
         if(optionalCuenta.isEmpty()){
             throw new CuentaException("No existe un usuario con el id dado");

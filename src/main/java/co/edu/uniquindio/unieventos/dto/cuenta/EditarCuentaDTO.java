@@ -10,11 +10,11 @@ public record EditarCuentaDTO(
         String id,
 
         @NotBlank(message = "El nombre es requerido")
-        @Length(max = 100, message = "El nombre debe tener un máximo de 100 caracteres")
+        @Length(min= 10,max = 50, message = "El nombre debe tener un minimo de 10 y un máximo de 50 caracteres")
         String nombre,
 
         @NotBlank(message = "El teléfono es requerido")
-        @Length(max = 10, message = "El teléfono debe tener un máximo de 10 caracteres")
+        @Length(min= 10, max = 10, message = "El teléfono debe tener un máximo de 10 caracteres")
         String telefono,
 
         @Length(max = 100, message = "La dirección debe tener un máximo de 100 caracteres")
