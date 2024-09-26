@@ -85,6 +85,7 @@ public class CuentaServiceImp implements CuentaService {
      * @param codigo
      * @throws CuentaException
      */
+    @Override
     public void validarCodigo(String email, String codigo) throws CuentaException {
         Cuenta cuenta = cuentaRepository.findByEmail(email)
                 .orElseThrow(() -> new CuentaException("No se encontró la cuenta."));
@@ -97,7 +98,9 @@ public class CuentaServiceImp implements CuentaService {
         }
     }
 
+
     // Metoodo para generar un código de validación de 4 cifras
+    @Override
     public String generarCodigoValidacion() {
         Random random = new Random();
         int code = random.nextInt(9000) + 1000;
@@ -105,7 +108,8 @@ public class CuentaServiceImp implements CuentaService {
     }
 
     //Metodo para encriptar la contraseña
-    private String encriptarPassword(String password){
+    @Override
+    public String encriptarPassword(String password){
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.encode( password );
     }
@@ -298,7 +302,8 @@ public class CuentaServiceImp implements CuentaService {
         return new TokenDTO( jwtUtils.generarToken(cuenta.getEmail(), map) );
     }
 
-    private Map<String, Object> construirClaims(Cuenta cuenta) {
+    @Override
+    public Map<String, Object> construirClaims(Cuenta cuenta) {
         return Map.of(
                 "rol", cuenta.getRol(),
                 "nombre", cuenta.getUsuario().getNombre(),

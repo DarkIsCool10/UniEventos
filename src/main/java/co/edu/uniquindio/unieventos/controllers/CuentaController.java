@@ -3,6 +3,7 @@ package co.edu.uniquindio.unieventos.controllers;
 import co.edu.uniquindio.unieventos.model.documents.Cuenta;
 import co.edu.uniquindio.unieventos.model.vo.Usuario;
 import co.edu.uniquindio.unieventos.repository.CuentaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/cuentas")
+@RequiredArgsConstructor
 public class CuentaController {
 
     @Autowired

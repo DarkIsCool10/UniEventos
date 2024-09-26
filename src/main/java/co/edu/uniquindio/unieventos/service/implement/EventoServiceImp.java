@@ -62,14 +62,14 @@ public class EventoServiceImp implements EventoService {
      * @param listaLocalidadesDTO
      * @return lista de localidades
      */
-    private List<Localidad> crearLocalidades(List<LocalidadDTO> listaLocalidadesDTO) {
+    @Override
+    public List<Localidad> crearLocalidades(List<LocalidadDTO> listaLocalidadesDTO) {
         // Inicializar la lista con la capacidad correcta
         List<Localidad> localidades = new ArrayList<>(listaLocalidadesDTO.size());
         // Iterar sobre cada LocalidadDTO y crear una nueva Localidad
         for (LocalidadDTO localidadDTO : listaLocalidadesDTO) {
             Localidad localidad = new Localidad(
                     localidadDTO.nombre(),
-                    0,
                     localidadDTO.capacidadMaxima(),
                     localidadDTO.precio()
             );
@@ -119,21 +119,24 @@ public class EventoServiceImp implements EventoService {
      * @param listaLocalidadesDTO
      * @return lista de localidades modificadas
      */
-    private List<Localidad> modificarLocalidades(List<Localidad> localidadesActuales ,List<LocalidadDTO> listaLocalidadesDTO) {
-        // Crear una lista para las localidades actualizadas
+    @Override
+    public List<Localidad> modificarLocalidades(List<Localidad> localidadesActuales ,List<LocalidadDTO> listaLocalidadesDTO) throws EventoException {
+
         List<Localidad> localidadesActualizadas = new ArrayList<>(localidadesActuales);
 
-        for (LocalidadDTO localidadDTO : listaLocalidadesDTO) {
-            for (Localidad localidad : localidadesActuales) {
-                // Comprobar si la localidad existe (por nombre, o puedes usar otro identificador si es necesario)
-                if (localidad.getNombre().equals(localidadDTO.nombre())) {
-                    // Actualizar la localidad existente
-                    localidad.setNombre(localidadDTO.nombre());
-                    localidad.setCapacidadMaxima(localidadDTO.capacidadMaxima());
-                    localidad.setPrecio(localidadDTO.precio());
-                }
-            }
-        }
+       if(!localidadesActuales.isEmpty()) {
+           for (LocalidadDTO localidadDTO : listaLocalidadesDTO) {
+               for (Localidad localidad : localidadesActuales) {
+                   if (localidad.getNombre().equals(localidadDTO.nombre())) {
+                       localidad.setNombre(localidadDTO.nombre());
+                       localidad.setCapacidadMaxima(localidadDTO.capacidadMaxima());
+                       localidad.setPrecio(localidadDTO.precio());
+                   }
+               }
+           }
+       }else{
+           throw new EventoException("La localidad que intentas editar no existe");
+       }
         return localidadesActualizadas;
     }
 

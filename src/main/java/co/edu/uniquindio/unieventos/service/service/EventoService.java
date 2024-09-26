@@ -10,7 +10,11 @@ public interface EventoService {
 
     String crearEvento(CrearEventoDTO crearEventoDTO) throws EventoException;
 
+    List<Localidad> crearLocalidades(List<LocalidadDTO> listaLocalidadesDTO);
+
     String editarEvento(EditarEventoDTO editarEventoDTO) throws EventoException;
+
+    List<Localidad> modificarLocalidades(List<Localidad> localidadesActuales ,List<LocalidadDTO> listaLocalidadesDTO) throws EventoException;
 
     String eliminarEvento(String id) throws EventoException;
 
