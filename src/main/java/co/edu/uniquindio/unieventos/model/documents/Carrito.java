@@ -23,7 +23,7 @@ public class Carrito {
     @EqualsAndHashCode.Include
     private String id;
 
-    private ObjectId idUsuario;
+    private String idUsuario;
     private List<DetalleCarrito> items;
     private LocalDateTime fecha;
 }

@@ -2,8 +2,10 @@ package co.edu.uniquindio.unieventos.service.implement;
 
 import co.edu.uniquindio.unieventos.configs.JWTUtils;
 import co.edu.uniquindio.unieventos.dto.autenticacion.TokenDTO;
+import co.edu.uniquindio.unieventos.dto.carrito.CrearCarritoDTO;
 import co.edu.uniquindio.unieventos.dto.cuenta.*;
 import co.edu.uniquindio.unieventos.dto.email.EmailDTO;
+import co.edu.uniquindio.unieventos.exceptions.CarritoException;
 import co.edu.uniquindio.unieventos.exceptions.CuentaException;
 import co.edu.uniquindio.unieventos.model.documents.Cuenta;
 import co.edu.uniquindio.unieventos.model.enums.EstadoCuenta;
@@ -11,6 +13,7 @@ import co.edu.uniquindio.unieventos.model.enums.Rol;
 import co.edu.uniquindio.unieventos.model.vo.CodigoValidacion;
 import co.edu.uniquindio.unieventos.model.vo.Usuario;
 import co.edu.uniquindio.unieventos.repository.CuentaRepository;
+import co.edu.uniquindio.unieventos.service.service.CarritoService;
 import co.edu.uniquindio.unieventos.service.service.CuentaService;
 import co.edu.uniquindio.unieventos.service.service.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +31,10 @@ import java.time.LocalDateTime;
 public class CuentaServiceImp implements CuentaService {
 
     private final CuentaRepository cuentaRepository;
+    private final CarritoService carritoService;
     private final JWTUtils jwtUtils;
     private final EmailService emailService;
+
 
     // Metodo de apoyo para buscar una cuenta por ID y devolver un Optional<Cuenta>
     private Optional<Cuenta> obtenerCuentaPorId(String idCuenta) {
@@ -42,7 +47,7 @@ public class CuentaServiceImp implements CuentaService {
      * @throws CuentaException si la cuenta validada por el email ya existe
      */
     @Override
-    public void crearCuenta(CrearCuentaDTO cuentaDTO) throws CuentaException {
+    public void crearCuenta(CrearCuentaDTO cuentaDTO) throws CuentaException, CarritoException {
         // Verifica si ya existe una cuenta con el mismo email
         if (cuentaRepository.existsByEmail(cuentaDTO.email())) {
             throw new CuentaException("Ya existe una cuenta registrada con este email electrónico.");
@@ -71,6 +76,14 @@ public class CuentaServiceImp implements CuentaService {
 
         // Guardar la cuenta en la base de datos
         Cuenta cuentaCreada = cuentaRepository.save(nuevaCuenta);
+
+        // Lógica para crear el carrito automáticamente
+        CrearCarritoDTO carritoDTO = new CrearCarritoDTO(
+                cuentaCreada.getId(),
+                new ArrayList<>(),
+                LocalDateTime.now()
+        );
+        carritoService.crearCarrito(carritoDTO);
 
         // Enviar el código de validación al correo
         String asunto = "Código de Validación";

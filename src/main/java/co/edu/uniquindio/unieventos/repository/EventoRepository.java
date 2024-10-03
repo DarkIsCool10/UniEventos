@@ -13,4 +13,7 @@ public interface EventoRepository extends MongoRepository<Evento, String> {
 
     //Metodo para contar eventos por ciudad
     long countByCiudad(String ciudad);
+    // Método para encontrar un evento por su ID
+    Optional<Evento> findById(String id);
+
 }

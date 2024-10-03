@@ -1,9 +1,11 @@
 package co.edu.uniquindio.unieventos.service.service;
 
-import co.edu.uniquindio.unieventos.dto.carrito.ActualizarCarritoDTO;
 import co.edu.uniquindio.unieventos.dto.carrito.CrearCarritoDTO;
-import co.edu.uniquindio.unieventos.dto.carrito.MostrarCarritoDTO;
+import co.edu.uniquindio.unieventos.dto.carrito.DetalleCarritoDTO;
 import co.edu.uniquindio.unieventos.exceptions.CarritoException;
+import co.edu.uniquindio.unieventos.model.documents.Carrito;
+import co.edu.uniquindio.unieventos.model.vo.DetalleCarrito;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,20 +15,19 @@ public interface CarritoService {
 
     String crearCarrito(CrearCarritoDTO carritoDTO) throws CarritoException;
 
-    String actualizarCarrito(ActualizarCarritoDTO carritoDTO) throws CarritoException;
+    Carrito obtenerCarritoPorUsuario(String idUsuario) throws CarritoException;
+    Carrito agregarItemsAlCarrito(String idUsuario, List<DetalleCarritoDTO> nuevosItemsDTO) throws CarritoException;
 
-    String eliminarCarrito(String idCarrito) throws CarritoException;
+    Carrito eliminarItemDelCarrito(String idUsuario, String nombreLocalidad) throws CarritoException;
 
-    MostrarCarritoDTO obtenerCarritoPorId(String idCarrito) throws CarritoException;
+    Carrito vaciarCarrito(String idUsuario) throws CarritoException;
 
-    List<MostrarCarritoDTO> listarCarritosPorUsuario(String idUsuario) throws CarritoException;
+    List<DetalleCarrito> listarProductosEnCarrito(String idUsuario) throws CarritoException;
 
-    String vaciarCarrito(String idCarrito) throws CarritoException;
+    double calcularTotalCarrito(String idUsuario) throws CarritoException;
 
-    double calcularTotalCarrito(String idCarrito) throws CarritoException;
+    boolean validarDisponibilidadEntradas(String idCarrito) throws CarritoException;
 
-    String finalizarCompra(String idCarrito) throws CarritoException;
-
-    boolean verificarDisponibilidadItems(String idCarrito) throws CarritoException;
+    List<DetalleCarrito> convertirItemsDTOAItems(List<DetalleCarritoDTO> itemsCarritoDTO) throws CarritoException;
 
 }

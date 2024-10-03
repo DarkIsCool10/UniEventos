@@ -54,12 +54,12 @@ public class CuentaServiceTest {
     public void crearCuentaTest(){
 
         CrearCuentaDTO cuentaDTO = new CrearCuentaDTO(
-               "2222",
-               "Juan Montoya",
-               "314567890",
-               "Carrera 5ta",
-               "juanM@email.com",
-               "pass101"
+               "25023",
+               "Juan Herrera Hemocho",
+               "3245642384",
+               "igual",
+               "juanH@email.com",
+               "contraseña"
         );
 
         // Primero, verificamos que no se lance ninguna excepción al crear la cuenta
