@@ -52,13 +52,13 @@ public class PQRController {
      * @return Lista de PQRs.
      */
     @GetMapping
-    public ResponseEntity<List<ItemPQRDTO>> listarPQRs() {
-        try {
+    public ResponseEntity<List<ItemPQRDTO>> listarPQRs() throws PQRException {
+        //try {
             List<ItemPQRDTO> pqrList = PQRService.listarPQRs();
             return new ResponseEntity<>(pqrList, HttpStatus.OK);
-        } catch (PQRException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        //} catch (PQRException e) {
+            //return new ResponseEntity<>(pqrList, HttpStatus.INTERNAL_SERVER_ERROR);
+        //}
     }
 
     /**
