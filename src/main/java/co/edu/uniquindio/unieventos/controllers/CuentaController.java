@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.controllers;
 
 import co.edu.uniquindio.unieventos.dto.cuenta.*;
 import co.edu.uniquindio.unieventos.dto.autenticacion.MensajeDTO;
+import co.edu.uniquindio.unieventos.exceptions.CarritoException;
 import co.edu.uniquindio.unieventos.exceptions.CuentaException;
 import co.edu.uniquindio.unieventos.model.documents.Cuenta;
 import co.edu.uniquindio.unieventos.model.vo.Usuario;
@@ -29,11 +30,11 @@ public class CuentaController {
     private final CuentaService cuentaService;
 
     @PostMapping("/crear-cuenta")
-    public ResponseEntity<MensajeDTO<String>> crearCuenta(@Valid @RequestBody CrearCuentaDTO cuentaDTO) throws CuentaException {
+    public ResponseEntity<MensajeDTO<String>> crearCuenta(@Valid @RequestBody CrearCuentaDTO cuentaDTO) throws CuentaException, CarritoException {
         try {
             cuentaService.crearCuenta(cuentaDTO);
             return ResponseEntity.ok(new MensajeDTO<>(true, "Cuenta creada correctamente"));
-        } catch (CuentaException e) {
+        } catch (CuentaException | CarritoException e) {
             return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
         }
     }
