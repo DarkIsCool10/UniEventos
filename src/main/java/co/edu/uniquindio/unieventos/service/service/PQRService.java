@@ -1,18 +1,25 @@
 package co.edu.uniquindio.unieventos.service.service;
 
+import co.edu.uniquindio.unieventos.dto.PQR.*;
+import co.edu.uniquindio.unieventos.exceptions.PQRException;
+import co.edu.uniquindio.unieventos.model.documents.PQR;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface PQRService {
 
-    //void CrearPQR(CrearPqrDTO pqrDTO) throws Exception;
+    void crearPQR(CrearPQRDTO pqrDTO) throws PQRException;
 
-    //Obtener pqr(idUsuario)
+    String eliminarPQR(String id) throws PQRException;
 
-    //Obtener infoPQR
+    InformacionPQRDTO obtenerInformacionPQR(String id) throws PQRException;
 
-    //Atender las pqr (Responder) 1. La PQR no sea resuelta(En proceso), 2. La PQR sea resuelta (Resuelta), 3. La PQR en estado Pendiente, es decir, no se ha revisado
+    List<PQR> obtenerPQRsPorUsuario(String idUsuario) throws PQRException;
 
-    //Eliminar pqr
+    String responderPQR(ResponderPQRDTO responderPqrDTO) throws PQRException;
+
+    List<ItemPQRDTO> listarPQRs() throws PQRException;
 
 }

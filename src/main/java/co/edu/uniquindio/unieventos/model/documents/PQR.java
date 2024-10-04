@@ -2,7 +2,6 @@ package co.edu.uniquindio.unieventos.model.documents;
 
 import co.edu.uniquindio.unieventos.model.enums.CategoriaPQR;
 import co.edu.uniquindio.unieventos.model.enums.EstadoPQR;
-import com.mongodb.internal.connection.LoadBalancedClusterableServerFactory;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
