@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.service.service;
 
 import co.edu.uniquindio.unieventos.dto.autenticacion.TokenDTO;
 import co.edu.uniquindio.unieventos.dto.cuenta.*;
+import co.edu.uniquindio.unieventos.exceptions.CarritoException;
 import co.edu.uniquindio.unieventos.exceptions.CuentaException;
 import co.edu.uniquindio.unieventos.model.documents.Cuenta;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import java.util.Map;
 @Service
 public interface CuentaService {
 
-    void crearCuenta(CrearCuentaDTO cuenta) throws CuentaException;
+    void crearCuenta(CrearCuentaDTO cuenta) throws CuentaException, CarritoException;
 
     ValidarCodigoDTO validarCodigo(ValidarCodigoDTO validarCodigoDTO) throws CuentaException;
 

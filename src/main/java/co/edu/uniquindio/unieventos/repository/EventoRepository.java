@@ -22,8 +22,8 @@ public interface EventoRepository extends MongoRepository<Evento, String> {
     //Metodo para contar eventos por ciudad
     long countByCiudad(String ciudad);
 
-//    @Query("{ 'nombre' : ?0,'tipoEvento': ?1, 'ciudad': ?2, 'fecha': { $gte: ?3 } }")
-//    List<Evento> filtrarEventosPorTipoCiudadYFecha(String nombre,TipoEvento tipoEvento, String ciudad, LocalDateTime fecha);
+    //@Query("{ 'nombre' : ?0,'tipoEvento': ?1, 'ciudad': ?2, 'fecha': { $gte: ?3 } }")
+    //List<Evento> filtrarEventosPorTipoCiudadYFecha(String nombre,TipoEvento tipoEvento, String ciudad, LocalDateTime fecha);
 
     @Query("{ 'tipo': ?0 }")
     List<Evento> filtrarPorTipo(String tipoEvento);
@@ -34,5 +34,7 @@ public interface EventoRepository extends MongoRepository<Evento, String> {
     @Query("{ 'fecha': { $gte: ?0, $lte: ?1 } }")
     List<Evento> filtrarPorRangoDeFechas(LocalDateTime desde, LocalDateTime hasta);
 
+    // Método para encontrar un evento por su ID
+    Optional<Evento> findById(String id);
 
 }
