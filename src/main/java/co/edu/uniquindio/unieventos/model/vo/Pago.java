@@ -18,13 +18,14 @@ public class Pago {
     @EqualsAndHashCode.Include
     private String id;
 
-    private String moneda;
-    private String tipoPago;
-    private String detalleEstado;
-    private String codigoAutorizacion;
-    private String estado;
-    private String metodoPago;
-    private float totalPagado;
     private LocalDateTime fecha;
+    private String estado;
+    private String detalleEstado;
+    private String tipoPago;
+    private String moneda;
+    private String codigoAutorizacion;
+    private float ValorTransaccion;
+
+    private String metodoPago;
 
 }

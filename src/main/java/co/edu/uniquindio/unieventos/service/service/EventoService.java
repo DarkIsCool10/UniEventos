@@ -18,7 +18,9 @@ public interface EventoService {
 
     void eliminarEvento(String id) throws EventoException;
 
-    InformacionEventoDTO obtenerInformacionEvento(String id) throws EventoException;
+    Evento obtenerInformacionEvento(String id) throws EventoException;
+
+    Localidad obtenerLocalidadPorNombre(String nombre) throws EventoException;
 
     List<ItemEventoDTO> listarEventos();
 

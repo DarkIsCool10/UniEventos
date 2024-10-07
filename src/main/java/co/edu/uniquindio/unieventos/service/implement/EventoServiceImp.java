@@ -7,6 +7,7 @@ import co.edu.uniquindio.unieventos.model.enums.EstadoEvento;
 import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
 import co.edu.uniquindio.unieventos.model.vo.Localidad;
 import co.edu.uniquindio.unieventos.repository.EventoRepository;
+import co.edu.uniquindio.unieventos.repository.LocalidadRepository;
 import co.edu.uniquindio.unieventos.service.service.EventoService;
 import co.edu.uniquindio.unieventos.service.service.ImagesService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class EventoServiceImp implements EventoService {
 
     private final EventoRepository eventoRepo;
     private final ImagesService imagesService;
+    private final LocalidadRepository localidadRepository;
 
     //Metodo para obtener un evento mediante el id
     private Optional<Evento> obtenerEventoPorId(String idEvento) throws EventoException {
@@ -157,7 +159,7 @@ public class EventoServiceImp implements EventoService {
     }
 
     @Override
-    public InformacionEventoDTO obtenerInformacionEvento(String id) throws EventoException {
+    public Evento obtenerInformacionEvento(String id) throws EventoException {
 
         Optional<Evento> optionalEvento = obtenerEventoPorId(id);
 
@@ -165,20 +167,7 @@ public class EventoServiceImp implements EventoService {
             throw new EventoException("No se encontro el evento con el id: " +id);
         }
 
-        Evento evento = optionalEvento.get();
-        return new InformacionEventoDTO(
-                evento.getId(),
-                evento.getImagenPortada(),
-                evento.getNombre(),
-                evento.getDescripcion(),
-                evento.getDireccion(),
-                evento.getImagenLocalidad(),
-                evento.getTipo(),
-                evento.getEstado(),
-                evento.getFecha(),
-                evento.getCiudad(),
-                evento.getLocalidades()
-        );
+        return optionalEvento.get();
     }
 
     @Override
@@ -298,6 +287,16 @@ public class EventoServiceImp implements EventoService {
         }
 
         return eventoFiltradoDTO;
+    }
+
+    public Localidad obtenerLocalidadPorNombre(String nombre) throws EventoException {
+        Optional<Localidad> optionalLocalidad = localidadRepository.findById(nombre);
+
+        if (optionalLocalidad.isEmpty()) {
+            throw new EventoException("No se encontró la localidad con el id: " + nombre);
+        }
+
+        return optionalLocalidad.get();
     }
 
 //    @Override
