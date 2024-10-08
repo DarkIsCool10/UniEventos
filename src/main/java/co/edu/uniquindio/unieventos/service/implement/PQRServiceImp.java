@@ -39,13 +39,12 @@ public class PQRServiceImp implements PQRService {
     }
 
     @Override
-    public String eliminarPQR(String id) throws PQRException {
+    public void eliminarPQR(String id) throws PQRException {
         Optional<PQR> pqrOpt = pqrRepository.findById(id);
         if (pqrOpt.isEmpty()) {
             throw new PQRException("PQR no encontrada");
         }
         pqrRepository.deleteById(id);
-        return "PQR eliminada con éxito";
     }
 
     @Override
@@ -81,7 +80,7 @@ public class PQRServiceImp implements PQRService {
     }
 
     @Override
-    public String responderPQR(ResponderPQRDTO responderPqrDTO) throws PQRException {
+    public void responderPQR(ResponderPQRDTO responderPqrDTO) throws PQRException {
         Optional<PQR> pqrOpt = pqrRepository.findById(responderPqrDTO.id());
         if (pqrOpt.isEmpty()) {
             throw new PQRException("PQR no encontrada");
@@ -97,7 +96,6 @@ public class PQRServiceImp implements PQRService {
         pqr.setFechaRespuesta(LocalDateTime.now());
 
         pqrRepository.save(pqr);
-        return "PQR respondida con éxito";
     }
 
     @Override

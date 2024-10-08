@@ -191,56 +191,45 @@ public class EventoServiceImp implements EventoService {
     }
 
     @Override
-    public List<EventoFiltradoDTO> filtrarPorTipo(TipoEvento tipoEvento) {
-        List<Evento> eventos = eventoRepo.filtrarPorTipo(tipoEvento.name());
+    public List<EventoFiltradoDTO> filtrarEventos(EventoFiltradoDTO eventoFiltradoDTO) {
+        // Realizamos la consulta en el repositorio según los filtros proporcionados
+        List<Evento> eventos = eventoRepo.filtrarEventos(
+                eventoFiltradoDTO.nombre(),
+                eventoFiltradoDTO.tipoEvento() != null ? eventoFiltradoDTO.tipoEvento().name() : null,
+                eventoFiltradoDTO.ciudad(),
+                eventoFiltradoDTO.fecha()
+        );
 
+        // Verificamos si no hay eventos
         if (eventos.isEmpty()) {
-            throw new EventoException("No se encontraron eventos para el tipo de evento: " + tipoEvento);
+            throw new EventoException("No se encontraron eventos para los filtros proporcionados.");
         }
 
-        List<EventoFiltradoDTO> eventoFiltradoDTO = new ArrayList<>();
+        // Convertimos los eventos a DTOs usando un for
+        List<EventoFiltradoDTO> eventoFiltradoDTOs = new ArrayList<>();
 
-        for(Evento evento : eventos){
-            eventoFiltradoDTO.add(new EventoFiltradoDTO(
-                    evento.getImagenPortada(),
-                    evento.getNombre(),
-                    evento.getDireccion(),
-                    evento.getCiudad(),
-                    evento.getFecha(),
-                    evento.getTipo(),
-                    evento.getLocalidades()
-            ));
+        for (Evento evento : eventos) {
+            EventoFiltradoDTO dto = convertirAEventoFiltradoDTO(evento);
+            eventoFiltradoDTOs.add(dto);
         }
 
-
-        return eventoFiltradoDTO;
+        return eventoFiltradoDTOs;
     }
 
-
-    @Override
-    public List<EventoFiltradoDTO> filtrarPorFecha(LocalDate fecha) {
-        List<Evento> eventos = eventoRepo.filtrarPorRangoDeFechas(fecha.atStartOfDay(), fecha.plusDays(1).atStartOfDay());
-        if (eventos.isEmpty()) {
-            throw new EventoException("No se encontraron eventos para la fecha: " + fecha);
-        }
-
-        List<EventoFiltradoDTO> eventoFiltradoDTO = new ArrayList<>();
-
-        for(Evento evento : eventos){
-            eventoFiltradoDTO.add(new EventoFiltradoDTO(
-                    evento.getImagenPortada(),
-                    evento.getNombre(),
-                    evento.getDireccion(),
-                    evento.getCiudad(),
-                    evento.getFecha(),
-                    evento.getTipo(),
-                    evento.getLocalidades()
-            ));
-        }
-
-        return eventoFiltradoDTO;
+    // Metodo privado para convertir un Evento en EventoFiltradoDTO
+    private EventoFiltradoDTO convertirAEventoFiltradoDTO(Evento evento) {
+        return new EventoFiltradoDTO(
+                evento.getImagenPortada(),
+                evento.getNombre(),
+                evento.getDireccion(),
+                evento.getCiudad(),
+                evento.getFecha(),
+                evento.getTipo(),
+                evento.getLocalidades()
+        );
     }
 
+    /*
     @Override
     public List<EventoFiltradoDTO> filtrarPorCiudad(String ciudad) {
         List<Evento> eventos = eventoRepo.filtrarPorCiudad(ciudad);
@@ -265,7 +254,8 @@ public class EventoServiceImp implements EventoService {
         return eventoFiltradoDTO;
     }
 
-    @Override
+    */
+
     public List<EventoFiltradoDTO> filtrarPorRangoDeFechas(LocalDateTime desde, LocalDateTime hasta) {
         List<Evento> eventos = eventoRepo.filtrarPorRangoDeFechas(desde, hasta);
         if (eventos.isEmpty()) {

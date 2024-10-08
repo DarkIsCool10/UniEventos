@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.ServiceTest;
 
 import co.edu.uniquindio.unieventos.dto.cupon.CrearCuponDTO;
 import co.edu.uniquindio.unieventos.dto.cupon.EditarCuponDTO;
+import co.edu.uniquindio.unieventos.dto.cupon.ItemsCuponDTO;
 import co.edu.uniquindio.unieventos.model.documents.Cupon;
 import co.edu.uniquindio.unieventos.model.enums.EstadoCupon;
 import co.edu.uniquindio.unieventos.model.enums.TipoCupon;
@@ -61,14 +62,17 @@ public class CuponServiceTest {
     public void listarCuponesSinFiltrosTest() {
         // Probar sin filtros, debería devolver todos los cupones
         assertDoesNotThrow(() -> {
-            List<Cupon> cupones = cuponServiceImp.obtenerCuponesFiltrados(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+            // Se crea un DTO vacío para no aplicar filtros
+            ItemsCuponDTO itemCuponDTO = new ItemsCuponDTO(
+                    "AMOR Y AMISTAD", // nombre
+                    LocalDateTime.now().plusDays(10), // fechaVencimiento
+                    LocalDateTime.now(), // fechaApertura
+                    10.0f, // descuento
+                    TipoCupon.UNICO, // tipo
+                    EstadoCupon.DISPONIBLE// estado
             );
+
+            List<ItemsCuponDTO> cupones = cuponServiceImp.obtenerCuponesFiltrados(itemCuponDTO);
 
             // Se espera que la lista no esté vacía
             assertFalse(cupones.isEmpty());
