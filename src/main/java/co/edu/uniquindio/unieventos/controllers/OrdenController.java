@@ -7,11 +7,13 @@ import co.edu.uniquindio.unieventos.dto.orden.EditarOrdenDTO;
 import co.edu.uniquindio.unieventos.exceptions.OrdenException;
 import co.edu.uniquindio.unieventos.model.documents.Orden;
 import co.edu.uniquindio.unieventos.service.service.OrdenService;
+import com.mercadopago.resources.preference.Preference;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/ordenes")
@@ -66,4 +68,15 @@ public class OrdenController {
         return ResponseEntity.ok(ordenes);
     }
      */
+
+    @PostMapping("/realizar-pago")
+    public ResponseEntity<MensajeDTO<Preference>> realizarPago(@RequestParam("idOrden") String idOrden) throws Exception{
+        return ResponseEntity.ok().body(new MensajeDTO<>(false, ordenService.realizarPago(idOrden)));
+    }
+
+    @PostMapping("/notificacion-pago")
+    public void recibirNotificacionMercadoPago(@RequestBody Map<String, Object> requestBody) {
+        ordenService.recibirNotificacionMercadoPago(requestBody);
+    }
+
 }

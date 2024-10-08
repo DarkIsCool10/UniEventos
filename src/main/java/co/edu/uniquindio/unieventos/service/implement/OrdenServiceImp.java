@@ -145,7 +145,7 @@ public class OrdenServiceImp implements OrdenService {
 
 
         // Configurar las credenciales de MercadoPago
-        MercadoPagoConfig.setAccessToken("ACCESS_TOKEN");
+        MercadoPagoConfig.setAccessToken("APP_USR-4123262776745313-100812-965fcccac0cb0fd91a2368b9d8c3689f-2027268786");
 
 
         // Configurar las urls de retorno de la pasarela (Frontend)
@@ -161,7 +161,7 @@ public class OrdenServiceImp implements OrdenService {
                 .backUrls(backUrls)
                 .items(itemsPasarela)
                 .metadata(Map.of("id_orden", ordenGuardada.getId()))
-                .notificationUrl("URL NOTIFICACION")
+                .notificationUrl("https://de93-2800-e2-9880-a18-6405-c7c4-bed9-4dde.ngrok-free.app")
                 .build();
 
 
