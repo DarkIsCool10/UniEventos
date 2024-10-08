@@ -13,13 +13,12 @@ import co.edu.uniquindio.unieventos.service.service.CuponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +29,8 @@ public class CuponServiceImp implements CuponService{
     @Autowired
     private MongoTemplate mongoTemplate;
 
-
-    public String crearCupon(CrearCuponDTO cuponDTO) throws CuponException {
+    @Override
+    public void crearCupon(CrearCuponDTO cuponDTO) throws CuponException {
         // Verifica si ya existe un cupon con el mismo codigo
         if (cuponRepository.existsByCodigo(cuponDTO.codigo())) {
             throw new CuponException("Ya existe un cupon registrada con este codigo.");
@@ -46,13 +45,20 @@ public class CuponServiceImp implements CuponService{
         nuevoCupon.setTipo(cuponDTO.tipoCupon());
         nuevoCupon.setEstado(cuponDTO.estadoCupon());
 
+        // Verificar si la fecha de apertura está presente en el DTO
+        if (cuponDTO.fechaApertura() != null) {
+            nuevoCupon.setFechaApertura(cuponDTO.fechaApertura());
+        } else {
+            // Si no se especifica, se asigna la fecha y hora actuales
+            nuevoCupon.setFechaApertura(LocalDateTime.now());
+        }
+
         // Guardar el cupon en la base de datos
         cuponRepository.save(nuevoCupon);
-
-        return "Cupon creado exitosamente";
     }
 
-    public String editarCupon(EditarCuponDTO cuponDTO, String cuponId) throws CuponException {
+    @Override
+    public void editarCupon(EditarCuponDTO cuponDTO, String cuponId) throws CuponException {
         // Validar que el DTO no sea nulo y que el ID no sea nulo
         if (cuponDTO == null || cuponId == null || cuponId.isEmpty()) {
             throw new CuponException("Los datos de cuenta o el id no pueden ser nulos");
@@ -70,13 +76,19 @@ public class CuponServiceImp implements CuponService{
         cuponExistente.setDescuento(cuponDTO.porcentajeDescuento());
         cuponExistente.setFechaVencimiento(cuponDTO.fechaVencimiento());
 
+
+        if (cuponDTO.fechaApertura() != null) {
+            cuponExistente.setFechaApertura(cuponDTO.fechaApertura());
+        } else {
+            cuponExistente.setFechaApertura(LocalDateTime.now());
+        }
+
         // Guardar los cambios en la base de datos
         cuponRepository.save(cuponExistente);
-
-        return "Cupon actualizado con éxito";
     }
 
-    public String eliminarCupon(String id) throws CuponException {
+    @Override
+    public void eliminarCupon(String id) throws CuponException {
         // Validar que el ID no sea nulo o vacío
         if (id == null || id.isEmpty()) {
             throw new CuponException("El ID del cupon no puede ser nulo o vacío");
@@ -88,10 +100,9 @@ public class CuponServiceImp implements CuponService{
 
         // Eliminar el cupon
         cuponRepository.delete(cuponExistente);
-
-        return "Cupon eliminado con éxito";
     }
 
+    @Override
     public InformacionCuponDTO obtenerInformacionCupon(String id) throws CuponException {
         // Validar que el ID no sea nulo o vacío
         if (id == null || id.isEmpty()) {
@@ -111,33 +122,44 @@ public class CuponServiceImp implements CuponService{
         );
     }
 
-    public List<Cupon> obtenerCuponesFiltrados(String nombre, LocalDateTime fechaVencimiento, LocalDateTime fechaApertura, Float descuento, TipoCupon tipo, EstadoCupon estado) {
-        List<Cupon> cupones = cuponRepository.findAll();
+    @Override
+    public List<ItemsCuponDTO> obtenerCuponesFiltrados(ItemsCuponDTO itemCuponDTO) {
+        List<Cupon> cuponesFiltrados = cuponRepository.findAll();
 
-        // Aplica filtros condicionalmente
-        if (nombre != null && !nombre.isEmpty()) {
-            cupones = cuponRepository.findByNombreContainingIgnoreCase(nombre);
-        }
-        if (fechaVencimiento != null) {
-            cupones = cuponRepository.findByFechaVencimientoAfter(fechaVencimiento);
-        }
-        if (fechaApertura != null) {
-            cupones = cuponRepository.findByFechaAperturaAfter(fechaApertura);
-        }
-        if (descuento != null) {
-            cupones = cuponRepository.findByDescuento(descuento);
-        }
-        if (tipo != null) {
-            cupones = cuponRepository.findByTipo(tipo);
-        }
-        if (estado != null) {
-            cupones = cuponRepository.findByEstado(estado);
-        }
+        String nombre = itemCuponDTO.nombre();
+        cuponesFiltrados = cuponRepository.findByNombreContainingIgnoreCase(nombre);
 
-        return cupones;
+        LocalDateTime fechaVencimiento = itemCuponDTO.fechaVencimiento();
+        cuponesFiltrados = cuponRepository.findByFechaVencimientoAfter(fechaVencimiento);
+
+        LocalDateTime fechaApertura = itemCuponDTO.fechaApertura();
+            cuponesFiltrados = cuponRepository.findByFechaAperturaAfter(fechaApertura);
+
+        Float descuento = itemCuponDTO.descuento();
+            cuponesFiltrados = cuponRepository.findByDescuento(descuento);
+
+        TipoCupon tipo = itemCuponDTO.tipo();
+            cuponesFiltrados = cuponRepository.findByTipo(tipo);
+
+        EstadoCupon estado = itemCuponDTO.estado();
+        cuponesFiltrados = cuponRepository.findByEstado(estado);
+
+        // Convertir la lista de Cupon a ItemsCuponDTO
+        List<ItemsCuponDTO> itemsCuponDTO = cuponesFiltrados.stream()
+                .map(cupon -> new ItemsCuponDTO(
+                        cupon.getNombre(),
+                        cupon.getFechaVencimiento(),
+                        cupon.getFechaApertura(),
+                        cupon.getDescuento(),
+                        cupon.getTipo(),
+                        cupon.getEstado()))
+                .collect(Collectors.toList());
+
+        return itemsCuponDTO;
     }
 
-    public String aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException {
+    @Override
+    public void aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException {
         // Buscar el cupón por código
         Optional<Cupon> cuponOpt = cuponRepository.findById(codigoCupon);
 
@@ -168,14 +190,6 @@ public class CuponServiceImp implements CuponService{
             cupon.setUtilizado(true);
             cuponRepository.save(cupon); // Guarda el cupón actualizado
         }
-
-        // Si todas las validaciones pasan, aplicar el descuento
-        return "Cupón aplicado con éxito. Descuento del " + cupon.getDescuento() + "%.";
-    }
-
-    @Override
-    public String fechaAperturaCupon(LocalDateTime fechaApertura) throws CuponException {
-        return null;
     }
 
 }

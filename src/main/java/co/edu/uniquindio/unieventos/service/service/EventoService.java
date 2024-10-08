@@ -22,14 +22,6 @@ public interface EventoService {
 
     List<ItemEventoDTO> listarEventos();
 
-    List<EventoFiltradoDTO> filtrarPorTipo(TipoEvento tipoEvento);
-
-    List<EventoFiltradoDTO> filtrarPorFecha(LocalDate fecha);
-
-    List<EventoFiltradoDTO> filtrarPorCiudad(String ciudad);
-
-    List<EventoFiltradoDTO> filtrarPorRangoDeFechas(LocalDateTime desde, LocalDateTime hasta);
-
-    //List<ItemEventoDTO> filtrarEventos(FiltroEventoDTO filtroEventoDTO);
+    List<EventoFiltradoDTO> filtrarEventos(EventoFiltradoDTO eventoFiltradoDTO);
 
 }

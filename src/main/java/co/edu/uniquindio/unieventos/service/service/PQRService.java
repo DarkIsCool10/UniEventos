@@ -12,13 +12,13 @@ public interface PQRService {
 
     void crearPQR(CrearPQRDTO pqrDTO) throws PQRException;
 
-    String eliminarPQR(String id) throws PQRException;
+    void eliminarPQR(String id) throws PQRException;
 
     InformacionPQRDTO obtenerInformacionPQR(String id) throws PQRException;
 
     List<PQR> obtenerPQRsPorUsuario(String idUsuario) throws PQRException;
 
-    String responderPQR(ResponderPQRDTO responderPqrDTO) throws PQRException;
+    void responderPQR(ResponderPQRDTO responderPqrDTO) throws PQRException;
 
     List<ItemPQRDTO> listarPQRs() throws PQRException;
 

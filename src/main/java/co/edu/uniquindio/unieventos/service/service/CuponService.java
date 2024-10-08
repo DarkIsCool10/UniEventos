@@ -13,26 +13,17 @@ import java.util.List;
 @Service
 public interface CuponService {
 
-    String crearCupon(CrearCuponDTO cupon) throws CuponException;
+    void crearCupon(CrearCuponDTO cupon) throws CuponException;
 
-    String editarCupon(EditarCuponDTO cupon, String cuponId) throws CuponException;
+    void editarCupon(EditarCuponDTO cupon, String cuponId) throws CuponException;
 
-    String eliminarCupon(String id) throws CuponException;
+    void eliminarCupon(String id) throws CuponException;
 
     InformacionCuponDTO obtenerInformacionCupon(String id) throws CuponException;
 
-    List<Cupon> obtenerCuponesFiltrados(
-        String nombre,
-        LocalDateTime fechaVencimiento,
-        LocalDateTime fechaApertura,
-        Float descuento,
-        TipoCupon tipo,
-        EstadoCupon estado);
+    List<ItemsCuponDTO> obtenerCuponesFiltrados(ItemsCuponDTO itemCuponDTO);
 
-    String aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException;
-
-    String fechaAperturaCupon(LocalDateTime fechaApertura) throws CuponException;
+    void aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException;
     //Aun falta
-
 
 }
