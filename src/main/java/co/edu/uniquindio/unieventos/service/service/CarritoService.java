@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public interface CarritoService {
 
-    String crearCarrito(CrearCarritoDTO carritoDTO) throws CarritoException;
+    void crearCarrito(CrearCarritoDTO carritoDTO) throws CarritoException;
 
     Carrito obtenerCarritoPorUsuario(String idUsuario) throws CarritoException;
 

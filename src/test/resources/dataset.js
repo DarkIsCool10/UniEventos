@@ -14,7 +14,7 @@ db.cuentas.insertMany([
             direccion: 'Calle 12 # 12-12',
         },
         fechaRegistro: ISODate('2024-07-25T21:41:57.849Z'),
-        _class: 'co.edu.uniquindio.proyecto.modelo.documentos.Cuenta'
+        _class: 'co.edu.uniquindio.proyecto.modelo.documents.Cuenta'
     },
     {
         _id: ObjectId('66a2c14dd9219911cd34f2c0'),
@@ -29,19 +29,19 @@ db.cuentas.insertMany([
             direccion: 'Calle ABC # 12-12',
         },
         fechaRegistro: ISODate('2024-08-02T21:41:57.849Z'),
-        _class: 'co.edu.uniquindio.proyecto.modelo.documentos.Cuenta'
+        _class: 'co.edu.uniquindio.proyecto.modelo.documents.Cuenta'
     },
     {
         _id: ObjectId('66a2c1517f3b340441ffdeb0'),
         rol: 'ADMINISTRADOR',
         estado: 'ACTIVO',
-        email: 'admin1@email.com',
-        password: 'password',
+        email: 'camiloalbran2018@gmail.com',
+        password: 'admin10',
         usuario: {
             nombre: 'Admin 1'
         },
-        fechaRegistro: ISODate('2024-08-25T21:41:57.849Z'),
-        _class: 'co.edu.uniquindio.proyecto.modelo.documentos.Cuenta'
+        fechaRegistro: ISODate('2024-10-09T21:41:57.849Z'),
+        _class: 'co.edu.uniquindio.proyecto.modelo.documents.Cuenta'
     },
 ]);
 

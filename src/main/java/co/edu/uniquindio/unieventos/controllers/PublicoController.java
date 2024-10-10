@@ -5,10 +5,12 @@ import co.edu.uniquindio.unieventos.dto.autenticacion.TokenDTO;
 import co.edu.uniquindio.unieventos.dto.cuenta.CambiarPasswordDTO;
 import co.edu.uniquindio.unieventos.dto.cuenta.CrearCuentaDTO;
 import co.edu.uniquindio.unieventos.dto.cuenta.LoginDTO;
+import co.edu.uniquindio.unieventos.dto.cuenta.ValidarCodigoDTO;
 import co.edu.uniquindio.unieventos.dto.cupon.InformacionCuponDTO;
 import co.edu.uniquindio.unieventos.dto.cupon.ItemsCuponDTO;
 import co.edu.uniquindio.unieventos.dto.email.EmailDTO;
 import co.edu.uniquindio.unieventos.dto.evento.EventoFiltradoDTO;
+import co.edu.uniquindio.unieventos.dto.evento.ItemEventoDTO;
 import co.edu.uniquindio.unieventos.exceptions.*;
 import co.edu.uniquindio.unieventos.model.documents.Cupon;
 import co.edu.uniquindio.unieventos.service.service.CuentaService;
@@ -57,18 +59,13 @@ public class PublicoController {
         }
     }
 
-    /**
-     * Metodo para enviar emails
-     * @param emailDTO
-     * @return Mensaje de confirmacion o error segun el reultado de el envio
-     */
-    @PostMapping("/enviar")
-    public ResponseEntity<MensajeDTO<String>> enviarCorreo(@RequestBody EmailDTO emailDTO) throws EmailException  {
+    @PostMapping("/validar-codigo-registro")
+    public ResponseEntity<MensajeDTO<String>> validarCodigo(@Valid @RequestBody ValidarCodigoDTO validarCodigoDTO)throws CuentaException {
         try {
-            emailService.enviarCorreo(emailDTO);
-            return ResponseEntity.ok(new MensajeDTO<>(true,"Correo enviado exitosamente."));
-        } catch (EmailException e) {
-            return ResponseEntity.status(500).body(new MensajeDTO<>(false, e.getMessage()));
+            cuentaService.validarCodigo(validarCodigoDTO);
+            return ResponseEntity.ok(new MensajeDTO<>(true, "Cuenta activada con exito"));
+        }catch (CuentaException e){
+            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
         }
     }
 
@@ -102,6 +99,12 @@ public class PublicoController {
     public ResponseEntity<MensajeDTO<List<EventoFiltradoDTO>>> filtrarEventos(@Valid @RequestBody EventoFiltradoDTO eventoFiltradoDTO) throws EventoException {
         List<EventoFiltradoDTO> eventosFiltrados = eventoService.filtrarEventos(eventoFiltradoDTO);
         return ResponseEntity.ok(new MensajeDTO<>(true, eventosFiltrados));
+    }
+
+    @GetMapping("/listar-eventos")
+    public ResponseEntity<MensajeDTO<List<ItemEventoDTO>>> listarEventos() throws EventoException {
+        List<ItemEventoDTO> eventos = eventoService.listarEventos();
+        return ResponseEntity.ok(new MensajeDTO<>(false, eventos));
     }
 
 }

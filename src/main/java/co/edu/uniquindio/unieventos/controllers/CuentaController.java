@@ -59,16 +59,6 @@ public class CuentaController {
         }
     }
 
-    @GetMapping("/validar-codigo-registro")
-    public ResponseEntity<MensajeDTO<String>> validarCodigo(@Valid @RequestBody ValidarCodigoDTO validarCodigoDTO)throws CuentaException {
-        try {
-            cuentaService.validarCodigo(validarCodigoDTO);
-            return ResponseEntity.ok(new MensajeDTO<>(true, "Cuenta activada con exito"));
-        }catch (CuentaException e){
-            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
-        }
-    }
-
     @DeleteMapping("/eliminar-cuenta/{id}")
     public ResponseEntity<MensajeDTO<String>> eliminarCuenta(@Valid @PathVariable String id) throws CuentaException {
         try {
