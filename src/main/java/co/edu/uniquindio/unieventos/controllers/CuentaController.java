@@ -7,20 +7,18 @@ import co.edu.uniquindio.unieventos.dto.carrito.CrearCarritoDTO;
 import co.edu.uniquindio.unieventos.dto.carrito.DetalleCarritoDTO;
 import co.edu.uniquindio.unieventos.dto.cuenta.*;
 import co.edu.uniquindio.unieventos.dto.autenticacion.MensajeDTO;
-import co.edu.uniquindio.unieventos.exceptions.CarritoException;
-import co.edu.uniquindio.unieventos.exceptions.CuentaException;
-import co.edu.uniquindio.unieventos.exceptions.CuponException;
-import co.edu.uniquindio.unieventos.exceptions.PQRException;
+import co.edu.uniquindio.unieventos.dto.orden.CrearOrdenDTO;
+import co.edu.uniquindio.unieventos.dto.orden.EditarOrdenDTO;
+import co.edu.uniquindio.unieventos.exceptions.*;
 import co.edu.uniquindio.unieventos.model.documents.Carrito;
 import co.edu.uniquindio.unieventos.model.documents.Cuenta;
+import co.edu.uniquindio.unieventos.model.documents.Orden;
 import co.edu.uniquindio.unieventos.model.documents.PQR;
 import co.edu.uniquindio.unieventos.model.vo.DetalleCarrito;
 import co.edu.uniquindio.unieventos.model.vo.Usuario;
 import co.edu.uniquindio.unieventos.repository.CuentaRepository;
-import co.edu.uniquindio.unieventos.service.service.CarritoService;
-import co.edu.uniquindio.unieventos.service.service.CuentaService;
-import co.edu.uniquindio.unieventos.service.service.CuponService;
-import co.edu.uniquindio.unieventos.service.service.PQRService;
+import co.edu.uniquindio.unieventos.service.service.*;
+import com.mercadopago.resources.preference.Preference;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.event.MailEvent;
 import jakarta.validation.Valid;
@@ -32,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -48,6 +47,8 @@ public class CuentaController {
     CuponService cuponService;
     @Autowired
     CarritoService carritoService;
+    @Autowired
+    OrdenService ordenService;
 
     @PutMapping("/editar-perfil")
     public ResponseEntity<MensajeDTO<String>> editarCuenta(@Valid @RequestBody EditarCuentaDTO cuenta) throws CuentaException{
@@ -86,7 +87,6 @@ public class CuentaController {
             return ResponseEntity.badRequest().body(new MensajeDTO<>(false, "Error al enviar el correo"));
         }
     }
-
 
     //==================================== METODOS PQR =============================================//
 
@@ -177,6 +177,54 @@ public class CuentaController {
     public ResponseEntity<MensajeDTO<Boolean>> validarDisponibilidadEntradas(@PathVariable String idUsuario) throws CarritoException {
         boolean disponible = carritoService.validarDisponibilidadEntradas(idUsuario);
         return ResponseEntity.ok(new MensajeDTO<>(false, disponible));
+    }
+
+    //==================================== METODOS ORDEN =============================================//
+
+    @PostMapping("/crear-orden")
+    public ResponseEntity<MensajeDTO<String>> crearOrden(@Valid @RequestBody CrearOrdenDTO ordenDTO) throws OrdenException {
+        try {
+            ordenService.crearOrden(ordenDTO);
+            return ResponseEntity.ok(new MensajeDTO<>(false, "Orden creada exitosamente"));
+        }catch (OrdenException e){
+            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/mostrar-orden/{id}")
+    public ResponseEntity<MensajeDTO<Orden>> mostrarOrden(@Valid @PathVariable String id) throws OrdenException {
+        Orden orden = ordenService.obtenerOrdenPorId(id);
+        return ResponseEntity.ok(new MensajeDTO<>(false, orden));
+    }
+
+    @PutMapping("/actualizar-orden/{id}")
+    public ResponseEntity<MensajeDTO<String>> actualizarOrden(@Valid @PathVariable String id, @Valid @RequestBody EditarOrdenDTO ordenDTO) throws OrdenException {
+        try {
+            ordenService.actualizarOrden(id, ordenDTO);
+            return ResponseEntity.ok(new MensajeDTO<>(false, "Orden actualizada exitosamente."));
+        }catch (OrdenException e){
+            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<MensajeDTO<String>> eliminarOrden(@Valid @PathVariable String id) throws OrdenException {
+        try {
+            ordenService.eliminarOrden(id);
+            return ResponseEntity.ok(new MensajeDTO<>(false, "Orden eliminada exitosamente."));
+        }catch (OrdenException e){
+            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/realizar-pago")
+    public ResponseEntity<MensajeDTO<Preference>> realizarPago(@RequestParam("idOrden") String idOrden) throws Exception{
+        return ResponseEntity.ok().body(new MensajeDTO<>(false, ordenService.realizarPago(idOrden)));
+    }
+
+    @PostMapping("/notificacion-pago")
+    public void recibirNotificacionMercadoPago(@RequestBody Map<String, Object> requestBody) {
+        ordenService.recibirNotificacionMercadoPago(requestBody);
     }
 
 }

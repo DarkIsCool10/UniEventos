@@ -10,7 +10,7 @@ import com.mercadopago.resources.preference.Preference;
 
 public interface OrdenService {
 
-    String crearOrden(CrearOrdenDTO ordenDTO) throws OrdenException;
+    void crearOrden(CrearOrdenDTO ordenDTO) throws OrdenException;
 
     Orden obtenerOrdenPorId(String ordenId) throws OrdenException;
 
@@ -19,5 +19,6 @@ public interface OrdenService {
     void eliminarOrden(String id) throws OrdenException;
 
     Preference realizarPago(String idOrden) throws Exception;
+
     void recibirNotificacionMercadoPago(Map<String, Object> request);
 }

@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.repository;
 
 import co.edu.uniquindio.unieventos.dto.evento.EventoFiltradoDTO;
 import co.edu.uniquindio.unieventos.dto.evento.ItemEventoDTO;
+import co.edu.uniquindio.unieventos.dto.evento.ObtenerEventoDTO;
 import co.edu.uniquindio.unieventos.model.documents.Evento;
 import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
 import org.springframework.cglib.core.Local;
@@ -35,7 +36,5 @@ public interface EventoRepository extends MongoRepository<Evento, String> {
             + "}")
     List<Evento> filtrarEventos(String nombre, String tipoEvento, String ciudad, LocalDateTime fecha);
 
-    // Método para encontrar un evento por su ID
-    Optional<Evento> findById(String id);
-
+    Optional<ObtenerEventoDTO> findByNombreLocalidad(String nombre);
 }

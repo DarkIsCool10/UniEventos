@@ -20,7 +20,7 @@ public interface EventoService {
 
     Evento obtenerInformacionEvento(String id) throws EventoException;
 
-    Localidad obtenerLocalidadPorNombre(String nombre) throws EventoException;
+    ObtenerEventoDTO obtenerLocalidadPorNombre(String nombre) throws EventoException;
 
     List<ItemEventoDTO> listarEventos();
 

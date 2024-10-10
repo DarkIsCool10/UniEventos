@@ -4,17 +4,14 @@ import co.edu.uniquindio.unieventos.dto.evento.*;
 import co.edu.uniquindio.unieventos.exceptions.EventoException;
 import co.edu.uniquindio.unieventos.model.documents.Evento;
 import co.edu.uniquindio.unieventos.model.enums.EstadoEvento;
-import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
 import co.edu.uniquindio.unieventos.model.vo.Localidad;
 import co.edu.uniquindio.unieventos.repository.EventoRepository;
-import co.edu.uniquindio.unieventos.repository.LocalidadRepository;
 import co.edu.uniquindio.unieventos.service.service.EventoService;
 import co.edu.uniquindio.unieventos.service.service.ImagesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +23,7 @@ public class EventoServiceImp implements EventoService {
 
     private final EventoRepository eventoRepo;
     private final ImagesService imagesService;
-    private final LocalidadRepository localidadRepository;
+    private final EventoRepository eventoRepository;
 
     //Metodo para obtener un evento mediante el id
     private Optional<Evento> obtenerEventoPorId(String idEvento) throws EventoException {
@@ -229,58 +226,8 @@ public class EventoServiceImp implements EventoService {
         );
     }
 
-    /*
-    @Override
-    public List<EventoFiltradoDTO> filtrarPorCiudad(String ciudad) {
-        List<Evento> eventos = eventoRepo.filtrarPorCiudad(ciudad);
-        if (eventos.isEmpty()) {
-            throw new EventoException("No se encontraron eventos para la ciudad: " + ciudad);
-        }
-
-        List<EventoFiltradoDTO> eventoFiltradoDTO = new ArrayList<>();
-
-        for(Evento evento : eventos){
-            eventoFiltradoDTO.add(new EventoFiltradoDTO(
-                    evento.getImagenPortada(),
-                    evento.getNombre(),
-                    evento.getDireccion(),
-                    evento.getCiudad(),
-                    evento.getFecha(),
-                    evento.getTipo(),
-                    evento.getLocalidades()
-            ));
-        }
-
-        return eventoFiltradoDTO;
-    }
-
-    */
-
-    public List<EventoFiltradoDTO> filtrarPorRangoDeFechas(LocalDateTime desde, LocalDateTime hasta) {
-        List<Evento> eventos = eventoRepo.filtrarPorRangoDeFechas(desde, hasta);
-        if (eventos.isEmpty()) {
-            throw new EventoException("No se encontraron eventos en el rango de fechas: " + desde + " a " + hasta);
-        }
-
-        List<EventoFiltradoDTO> eventoFiltradoDTO = new ArrayList<>();
-
-        for(Evento evento : eventos){
-            eventoFiltradoDTO.add(new EventoFiltradoDTO(
-                    evento.getImagenPortada(),
-                    evento.getNombre(),
-                    evento.getDireccion(),
-                    evento.getCiudad(),
-                    evento.getFecha(),
-                    evento.getTipo(),
-                    evento.getLocalidades()
-            ));
-        }
-
-        return eventoFiltradoDTO;
-    }
-
-    public Localidad obtenerLocalidadPorNombre(String nombre) throws EventoException {
-        Optional<Localidad> optionalLocalidad = localidadRepository.findById(nombre);
+    public ObtenerEventoDTO obtenerLocalidadPorNombre(String nombre) throws EventoException {
+        Optional<ObtenerEventoDTO> optionalLocalidad = eventoRepository.findByNombreLocalidad(nombre);
 
         if (optionalLocalidad.isEmpty()) {
             throw new EventoException("No se encontró la localidad con el id: " + nombre);
@@ -288,34 +235,5 @@ public class EventoServiceImp implements EventoService {
 
         return optionalLocalidad.get();
     }
-
-//    @Override
-//    public List<ItemEventoDTO> filtrarEventos(FiltroEventoDTO filtroEventoDTO) {
-//
-//        LocalDateTime fecha = LocalDateTime.now();
-//
-//        // Llamamos al metodo del repositorio
-//        List<Evento> eventos = eventoRepo.filtrarEventosPorTipoCiudadYFecha(
-//                filtroEventoDTO.nombre(),
-//                filtroEventoDTO.tipoEvento(),
-//                filtroEventoDTO.ciudad(),
-//                filtroEventoDTO.fecha()
-//        );
-//
-//        // Convertimos los eventos a DTOs
-//        return eventos.stream()
-//                .map(this::convertirAItemEventoDTO)
-//                .collect(Collectors.toList());
-//    }
-//
-//    private ItemEventoDTO convertirAItemEventoDTO(Evento evento) {
-//        return new ItemEventoDTO(
-//                evento.getImagenPortada(),
-//                evento.getNombre(),
-//                evento.getFecha(),
-//                evento.getDireccion(),
-//                evento.getCiudad()
-//        );
-//    }
 
 }

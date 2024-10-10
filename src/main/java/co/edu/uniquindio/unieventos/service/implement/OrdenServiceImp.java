@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unieventos.service.implement;
 
+import co.edu.uniquindio.unieventos.dto.evento.ObtenerEventoDTO;
 import co.edu.uniquindio.unieventos.dto.orden.CrearOrdenDTO;
 import co.edu.uniquindio.unieventos.dto.orden.DetalleOrdenDTO;
 import co.edu.uniquindio.unieventos.dto.orden.EditarOrdenDTO;
@@ -39,7 +40,7 @@ public class OrdenServiceImp implements OrdenService {
     private final EventoService eventoServicio;
 
     @Override
-    public String crearOrden(CrearOrdenDTO ordenDTO) throws OrdenException {
+    public void crearOrden(CrearOrdenDTO ordenDTO) throws OrdenException {
 
         if (ordenDTO.detalleOrden().isEmpty()) {
             throw new OrdenException("La orden debe tener al menos un detalle.");
@@ -61,8 +62,6 @@ public class OrdenServiceImp implements OrdenService {
 
         // Guardar la orden
         Orden ordenGuardada = ordenRepository.save(orden);
-
-        return ordenGuardada.getId();
     }
 
     private List<DetalleOrden> convertirDetalleDTOADetalle(List<DetalleOrdenDTO> detalleOrdenDTO) {
@@ -124,7 +123,7 @@ public class OrdenServiceImp implements OrdenService {
 
             // Obtener el evento y la localidad del ítem
             Evento evento = eventoServicio.obtenerInformacionEvento(item.getIdEvento().toString());
-            Localidad localidad = eventoServicio.obtenerLocalidadPorNombre(item.getNombreLocalidad());
+            ObtenerEventoDTO localidad = eventoServicio.obtenerLocalidadPorNombre(item.getNombreLocalidad());
 
 
             // Crear el item de la pasarela
@@ -136,7 +135,7 @@ public class OrdenServiceImp implements OrdenService {
                             .categoryId(evento.getTipo().name())
                             .quantity(item.getCantidad())
                             .currencyId("COP")
-                            .unitPrice(BigDecimal.valueOf(localidad.getPrecio()))
+                            .unitPrice(BigDecimal.valueOf(localidad.precio()))
                             .build();
 
 
