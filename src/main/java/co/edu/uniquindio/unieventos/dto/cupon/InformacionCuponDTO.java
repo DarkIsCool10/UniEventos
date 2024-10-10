@@ -14,7 +14,7 @@ public record InformacionCuponDTO(
         @NotBlank @Min(5) @Max(50) String nombre,
         @NotBlank float porcentajeDescuento,
         @NotBlank @FutureOrPresent LocalDateTime fechaVencimiento,
-        @NotBlank @FutureOrPresent LocalDateTime fechaApertura,
+        LocalDateTime fechaApertura,
         @NotBlank TipoCupon tipoCupon,
         @NotBlank EstadoCupon estadoCupon
 ) {

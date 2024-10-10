@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import java.time.LocalDateTime;
 
 public record CrearCuponDTO (
+
         @NotBlank(message = "El código del cupón no puede estar vacío.")
         @Length(min = 3, max = 30, message = "El código del cupón debe tener entre 3 y 30 caracteres.")
         String codigo,

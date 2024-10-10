@@ -33,5 +33,4 @@ public class Orden {
     private List<DetalleOrden> detalle;
     private float total;
 
-
 }

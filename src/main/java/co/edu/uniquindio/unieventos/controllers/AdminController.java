@@ -13,6 +13,7 @@ import co.edu.uniquindio.unieventos.exceptions.EventoException;
 import co.edu.uniquindio.unieventos.exceptions.PQRException;
 import co.edu.uniquindio.unieventos.model.documents.Evento;
 import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
+import co.edu.uniquindio.unieventos.model.vo.Localidad;
 import co.edu.uniquindio.unieventos.repository.EventoRepository;
 import co.edu.uniquindio.unieventos.service.service.CuponService;
 import co.edu.uniquindio.unieventos.service.service.EventoService;
@@ -81,8 +82,14 @@ public class AdminController {
     }
 
     @GetMapping("/obtener-evento/{id}")
-    public ResponseEntity<MensajeDTO<InformacionEventoDTO>> obtenerInfoEvento(@Valid @PathVariable String id) throws EventoException {
-        InformacionEventoDTO info = eventoService.obtenerInformacionEvento(id);
+    public ResponseEntity<MensajeDTO<Evento>> obtenerInfoEvento(@Valid @PathVariable String id) throws EventoException {
+        Evento info = eventoService.obtenerInformacionEvento(id);
+        return ResponseEntity.ok(new MensajeDTO<>(true, info ));
+    }
+
+    @GetMapping("/obtener-localidad/{nombre}")
+    public ResponseEntity<MensajeDTO<Localidad>> obtenerLocalidad(@Valid @PathVariable String nombre) throws EventoException {
+        Localidad info = eventoService.obtenerLocalidadPorNombre(nombre);
         return ResponseEntity.ok(new MensajeDTO<>(true, info ));
     }
 
