@@ -226,29 +226,92 @@ db.eventos.insertMany([
 
 db.ordenes.insertMany([
     {
-        _id: ObjectId('66a2c6a55773597d73593fff'),
-        detalle: [
+        _id: ObjectId('66b5d2b28e2100008f60b2a1'),
+        idCliente: ObjectId('66a2c14dd9219911cd34f2c0'), // Rosa Lopez
+        idCupon: ObjectId('66b3c2a58e2100008f50a1a4'), // Cupón con descuento
+        codigoPasarela: 'PAY-12345-LOPEZ',
+        fecha: ISODate('2024-10-10T10:30:00.000Z'),
+        detalleOrden: [
             {
-                codigoEvento: ObjectId('66a2c476991cff088eb80aaf'),
-                nombreLocalidad: 'PLATEA',
-                precio: 50000,
-                cantidad: 2
+                producto: 'Entrada al evento - VIP',
+                cantidad: 2,
+                precioUnitario: 50.0,
+                subtotal: 100.0
             }
         ],
-        codigoCliente: ObjectId('66a2a9aaa8620e3c1c5437be'),
-        total: 100000,
-        fecha: ISODate('2024-07-25T21:41:57.849Z'),
-        codigoPasarela: 'CODIGO_PASARELA',
-        pago: {
-            codigoAutorizacion: '48dc3dd9-bde1-45ae-b23f-27ee7a261f00',
-            fecha: ISODate('2024-07-25T21:41:57.849Z'),
-            totalPagado: 100000,
-            estado: 'APROBADA',
-            metodoPago: 'TARJETA DE CRÉDITO'
-        },
+        total: 80.0,  // Descuento aplicado por el cupón
+        _class: 'co.edu.uniquindio.proyecto.modelo.documents.Orden'
+    },
+    {
+        _id: ObjectId('66b5d2b28e2100008f60b2a2'),
+        idCliente: ObjectId('66a3d24a7f421707baf98ab0'), // Jorge Ramirez
+        idCupon: null,  // No usó cupón
+        codigoPasarela: 'PAY-67890-RAMIREZ',
+        fecha: ISODate('2024-10-09T14:20:00.000Z'),
+        detalleOrden: [
+            {
+                producto: 'Entrada al evento - General',
+                cantidad: 3,
+                precioUnitario: 20.0,
+                subtotal: 60.0
+            }
+        ],
+        total: 60.0,
+        _class: 'co.edu.uniquindio.proyecto.modelo.documents.Orden'
+    },
+    {
+        _id: ObjectId('66b5d2b28e2100008f60b2a3'),
+        idCliente: ObjectId('66a2a9aaa8620e3c1c5437be'), // Pepito Perez
+        idCupon: ObjectId('66b3c2a58e2100008f50a1a5'),  // Usó cupón
+        codigoPasarela: 'PAY-11223-PEREZ',
+        fecha: ISODate('2024-10-08T09:00:00.000Z'),
+        detalleOrden: [
+            {
+                producto: 'Entrada al evento - Platino',
+                cantidad: 1,
+                precioUnitario: 100.0,
+                subtotal: 100.0
+            }
+        ],
+        total: 85.0,  // Descuento aplicado por el cupón
+        _class: 'co.edu.uniquindio.proyecto.modelo.documents.Orden'
+    },
+    {
+        _id: ObjectId('66b5d2b28e2100008f60b2a4'),
+        idCliente: ObjectId('66a3d2424d629f0716d1b111'), // Mariana Moreno
+        idCupon: null,  // No usó cupón
+        codigoPasarela: 'PAY-33445-MORENO',
+        fecha: ISODate('2024-10-07T16:45:00.000Z'),
+        detalleOrden: [
+            {
+                producto: 'Entrada al evento - VIP',
+                cantidad: 1,
+                precioUnitario: 50.0,
+                subtotal: 50.0
+            }
+        ],
+        total: 50.0,
+        _class: 'co.edu.uniquindio.proyecto.modelo.documents.Orden'
+    },
+    {
+        _id: ObjectId('66b5d2b28e2100008f60b2a5'),
+        idCliente: ObjectId('66b3c1a28e2100008f40a2d2'), // Julian Morales
+        idCupon: ObjectId('66b3c2a58e2100008f50a1a3'),  // Usó cupón
+        codigoPasarela: 'PAY-55667-MORALES',
+        fecha: ISODate('2024-10-06T18:00:00.000Z'),
+        detalleOrden: [
+            {
+                producto: 'Entrada al evento - General',
+                cantidad: 2,
+                precioUnitario: 20.0,
+                subtotal: 40.0
+            }
+        ],
+        total: 32.0,  // Descuento aplicado por el cupón
         _class: 'co.edu.uniquindio.proyecto.modelo.documents.Orden'
     }
 ]);
+
 
 db.carritos.insertMany([
     {
