@@ -227,7 +227,7 @@ public class EventoServiceImp implements EventoService {
     }
 
     public ObtenerEventoDTO obtenerLocalidadPorNombre(String nombre) throws EventoException {
-        Optional<ObtenerEventoDTO> optionalLocalidad = eventoRepository.findByNombreLocalidad(nombre);
+        Optional<ObtenerEventoDTO> optionalLocalidad = eventoRepository.findByLocalidadesNombre(nombre);
 
         if (optionalLocalidad.isEmpty()) {
             throw new EventoException("No se encontró la localidad con el id: " + nombre);
