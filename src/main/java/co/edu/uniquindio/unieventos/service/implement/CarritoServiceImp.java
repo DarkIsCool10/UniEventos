@@ -30,7 +30,7 @@ public class CarritoServiceImp implements CarritoService {
     private final EventoRepository eventoRepository;
 
     @Override
-    public String crearCarrito(CrearCarritoDTO carritoDTO) throws CarritoException {
+    public void crearCarrito(CrearCarritoDTO carritoDTO) throws CarritoException {
         // Validar el idUsuario
         if (carritoDTO.idUsuario() == null) {
             throw new CarritoException("El ID del usuario no puede ser nulo.");
@@ -44,9 +44,6 @@ public class CarritoServiceImp implements CarritoService {
 
         // Guardar el carrito en la base de datos
         Carrito carritoGuardado = carritoRepository.save(carrito);
-
-        // Retornar el ID del carrito guardado
-        return carritoGuardado.getId();
     }
 
     @Override

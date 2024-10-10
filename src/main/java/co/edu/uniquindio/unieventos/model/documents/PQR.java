@@ -22,7 +22,7 @@ public class PQR {
     @EqualsAndHashCode.Include
     private String id;
 
-    private ObjectId idUsuario;
+    private String idUsuario;
     private LocalDateTime fechaCreacion;
     private EstadoPQR estadoPQR;
     private CategoriaPQR categoriaPQR;

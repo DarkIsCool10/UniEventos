@@ -4,7 +4,7 @@ import co.edu.uniquindio.unieventos.model.enums.CategoriaPQR;
 import org.bson.types.ObjectId;
 
 public record CrearPQRDTO(
-        ObjectId idUsuario,
+        String idUsuario,
         CategoriaPQR categoriaPQR,
         String descripcion
 

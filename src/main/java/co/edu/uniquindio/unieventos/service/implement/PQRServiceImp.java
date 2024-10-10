@@ -2,9 +2,13 @@ package co.edu.uniquindio.unieventos.service.implement;
 
 import co.edu.uniquindio.unieventos.dto.PQR.*;
 import co.edu.uniquindio.unieventos.exceptions.PQRException;
+import co.edu.uniquindio.unieventos.model.documents.Cuenta;
 import co.edu.uniquindio.unieventos.model.documents.PQR;
 import co.edu.uniquindio.unieventos.model.enums.EstadoPQR;
+import co.edu.uniquindio.unieventos.model.vo.Usuario;
+import co.edu.uniquindio.unieventos.repository.CuentaRepository;
 import co.edu.uniquindio.unieventos.repository.PQRRepository;
+import co.edu.uniquindio.unieventos.service.service.CuentaService;
 import co.edu.uniquindio.unieventos.service.service.PQRService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 public class PQRServiceImp implements PQRService {
 
     private final PQRRepository pqrRepository;
+    private final CuentaRepository cuentaRepository;
 
     @Override
     public void crearPQR(CrearPQRDTO pqrDTO) throws PQRException {
@@ -27,6 +32,7 @@ public class PQRServiceImp implements PQRService {
             PQR pqr = new PQR();
             pqr.setIdUsuario(pqrDTO.idUsuario());
             pqr.setFechaCreacion(LocalDateTime.now());
+            pqr.setEstadoPQR(EstadoPQR.PENDIENTE);
             pqr.setCategoriaPQR(pqrDTO.categoriaPQR());
             pqr.setDescripcion(pqrDTO.descripcion());
             pqr.setRespuesta(null);
@@ -53,10 +59,18 @@ public class PQRServiceImp implements PQRService {
         if (pqrOpt.isEmpty()) {
             throw new PQRException("PQR no encontrada");
         }
+
         PQR pqr = pqrOpt.get();
+
+        Cuenta cuenta = cuentaRepository.findById(pqr.getIdUsuario())
+                .orElseThrow(() -> new PQRException("Usuario no encontrado"));
+
         return new InformacionPQRDTO(
                 pqr.getId(),
-                pqr.getIdUsuario().toString(),
+                cuenta.getUsuario().getNombre(),
+                cuenta.getUsuario().getTelefono(),
+                cuenta.getEmail(),
+                cuenta.getUsuario().getDireccion(),
                 pqr.getFechaCreacion(),
                 pqr.getEstadoPQR(),
                 pqr.getCategoriaPQR(),
@@ -65,6 +79,7 @@ public class PQRServiceImp implements PQRService {
                 pqr.getFechaRespuesta()
         );
     }
+
 
     @Override
     public List<PQR> obtenerPQRsPorUsuario(String idUsuario) throws PQRException {
@@ -87,12 +102,13 @@ public class PQRServiceImp implements PQRService {
         }
 
         PQR pqr = pqrOpt.get();
-        // Cambiar comparación a enum en vez de String
-        if (pqr.getEstadoPQR() == EstadoPQR.CERRADO) {
+
+        if (pqr.getEstadoPQR() == EstadoPQR.RESUELTO) {
             throw new PQRException("La PQR ya ha sido resuelta");
         }
 
         pqr.setRespuesta(responderPqrDTO.respuesta());
+        pqr.setEstadoPQR(EstadoPQR.RESUELTO);
         pqr.setFechaRespuesta(LocalDateTime.now());
 
         pqrRepository.save(pqr);

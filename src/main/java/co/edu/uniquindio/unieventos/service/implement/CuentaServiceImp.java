@@ -175,7 +175,7 @@ public class CuentaServiceImp implements CuentaService {
      * @throws CuentaException
      */
     @Override
-    public void eliminarCuenta(String id) throws CuentaException {
+    public void eliminarCuenta(String id) throws CuentaException{
         //Buscamos la cuenta del usuario que se quiere eliminar
         Optional<Cuenta> optionalCuenta = obtenerCuentaPorId(id);
 

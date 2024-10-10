@@ -86,13 +86,6 @@ public class AdminController {
         return ResponseEntity.ok(new MensajeDTO<>(true, info ));
     }
 
-    @GetMapping("/listar-eventos")
-    public ResponseEntity<MensajeDTO<List<ItemEventoDTO>>> listarEventos() throws EventoException {
-        List<ItemEventoDTO> eventos = eventoService.listarEventos();
-        return ResponseEntity.ok(new MensajeDTO<>(false, eventos));
-
-    }
-
     //==================================== METODOS PQR =============================================//
 
     /**
