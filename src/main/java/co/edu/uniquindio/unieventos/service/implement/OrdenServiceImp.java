@@ -50,9 +50,11 @@ public class OrdenServiceImp implements OrdenService {
     @Override
     public void crearOrdenDesdeCarrito(String idCliente, String codigoCupon, String codigoPasarela) throws OrdenException, CarritoException, CuponException {
 
-        // Obtener el carrito del cliente
-        Carrito carrito = carritoRepository.finCarritoPorIdUsuario(idCliente);
+        // Obtener el carrito del cliente, utilizando Optional
+        Carrito carrito = carritoRepository.findByIdUsuario(idCliente)
+                .orElseThrow(() -> new CarritoException("No se encontró el carrito para el usuario con ID: " + idCliente));
 
+        // Verificar que el carrito tenga ítems
         if (carrito.getItems().isEmpty()) {
             throw new OrdenException("El carrito debe tener al menos un detalle.");
         }
@@ -62,7 +64,6 @@ public class OrdenServiceImp implements OrdenService {
 
         // Calcular el total de la orden
         double totalOrden = calcularTotalOrden(detallesOrdenDTO, codigoCupon, LocalDateTime.now());
-
 
         // Crear el DTO de la orden usando los datos del usuario
         CrearOrdenDTO ordenDTO = new CrearOrdenDTO(
@@ -76,6 +77,7 @@ public class OrdenServiceImp implements OrdenService {
         // Llamar al método que crea la orden
         crearOrden(ordenDTO, totalOrden);
     }
+
 
     // Convierte los ítems del carrito a DetalleOrdenDTO
     private List<DetalleOrdenDTO> convertirCarritoADetalleOrdenDTO(List<DetalleCarrito> itemsCarrito) {

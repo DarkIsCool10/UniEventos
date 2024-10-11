@@ -111,19 +111,7 @@ public class CuentaController {
         return ResponseEntity.ok(new MensajeDTO<>(true, pqrsObtenidos));
     }
 
-    //==================================== METODOS CUPON =============================================//
-
-    @PostMapping("/aplicar-cupon")
-    public ResponseEntity<MensajeDTO<String>> aplicarCupon(@RequestParam String codigoCupon, @RequestParam LocalDateTime fechaCompra) throws CuponException {
-        try {
-            cuponService.aplicarCupon(codigoCupon, fechaCompra);
-            return ResponseEntity.ok(new MensajeDTO<>(true, "Cupón aplicado con éxito"));
-        } catch (CuponException e) {
-            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
-        }
-    }
-
-        //==================================== METODOS CARRITO =============================================//
+    //==================================== METODOS CARRITO =============================================//
 
     @PutMapping("/agregar-items-carrito/{idUsuario}")
     public ResponseEntity<MensajeDTO<String>> agregarItemsAlCarrito(@PathVariable String idUsuario, @Valid @RequestBody List<DetalleCarritoDTO> itemsCarritoDTO) throws CarritoException {
