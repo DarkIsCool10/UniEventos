@@ -12,6 +12,7 @@ import co.edu.uniquindio.unieventos.model.vo.DetalleCarrito;
 import co.edu.uniquindio.unieventos.model.vo.DetalleOrden;
 import co.edu.uniquindio.unieventos.model.vo.Localidad;
 import co.edu.uniquindio.unieventos.model.vo.Pago;
+import co.edu.uniquindio.unieventos.repository.CarritoRepository;
 import co.edu.uniquindio.unieventos.repository.OrdenRepository;
 import co.edu.uniquindio.unieventos.service.service.*;
 import com.mercadopago.MercadoPagoConfig;
@@ -25,6 +26,7 @@ import com.mercadopago.resources.preference.Preference;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -41,13 +43,15 @@ public class OrdenServiceImp implements OrdenService {
     private final OrdenRepository ordenRepository;
     private final EventoService eventoService;
     private final CarritoService carritoService;
+    private final CarritoRepository carritoRepository;
     private final CuentaService cuentaService;
     private final CuponService cuponService;
 
+    @Override
     public void crearOrdenDesdeCarrito(String idCliente, String codigoCupon, String codigoPasarela) throws OrdenException, CarritoException, CuponException {
 
         // Obtener el carrito del cliente
-        Carrito carrito = carritoService.obtenerCarritoPorUsuario(idCliente);
+        Carrito carrito = carritoRepository.finCarritoPorIdUsuario(idCliente);
 
         if (carrito.getItems().isEmpty()) {
             throw new OrdenException("El carrito debe tener al menos un detalle.");
@@ -74,7 +78,7 @@ public class OrdenServiceImp implements OrdenService {
     }
 
     // Convierte los ítems del carrito a DetalleOrdenDTO
-    public List<DetalleOrdenDTO> convertirCarritoADetalleOrdenDTO(List<DetalleCarrito> itemsCarrito) {
+    private List<DetalleOrdenDTO> convertirCarritoADetalleOrdenDTO(List<DetalleCarrito> itemsCarrito) {
         return itemsCarrito.stream().map(item -> {
             // Obtener el evento
             Evento evento = eventoService.obtenerInformacionEvento(item.getIdEvento().toString());
@@ -98,7 +102,7 @@ public class OrdenServiceImp implements OrdenService {
         }).collect(Collectors.toList());
     }
 
-
+    @Override
     public void crearOrden(CrearOrdenDTO ordenDTO, double totalOrden) throws OrdenException {
 
         if (ordenDTO.detalleOrden().isEmpty()) {
@@ -136,6 +140,7 @@ public class OrdenServiceImp implements OrdenService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public MostrarOrdenDTO mostrarOrden(String idOrden) throws OrdenException, CuentaException {
         // Obtener la orden de la base de datos
         Orden orden = obtenerOrdenPorId(idOrden);
@@ -186,6 +191,7 @@ public class OrdenServiceImp implements OrdenService {
 
 
     // Obtener una orden por ID
+    @Override
     public Orden obtenerOrdenPorId(String id) throws OrdenException {
         return ordenRepository.findById(id).orElseThrow(() -> new OrdenException("Orden no encontrada"));
     }
@@ -208,6 +214,7 @@ public class OrdenServiceImp implements OrdenService {
     }
 
     // Eliminar una orden
+    @Override
     public void eliminarOrden(String id) throws OrdenException {
 
         //Buscamos la cuenta del usuario que se quiere eliminar
