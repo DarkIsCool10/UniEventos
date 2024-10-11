@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record DetalleCarritoDTO(
 
@@ -20,6 +20,5 @@ public record DetalleCarritoDTO(
 
         @NotNull(message = "La fecha de agregación es obligatoria")
         @PastOrPresent(message = "La fecha de agregación no puede ser en el futuro")
-        LocalDateTime fechaAgregacion
-
+        LocalDate fechaAgregacion
 ) {}

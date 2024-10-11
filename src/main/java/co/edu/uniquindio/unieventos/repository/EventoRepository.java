@@ -1,16 +1,13 @@
 package co.edu.uniquindio.unieventos.repository;
 
-import co.edu.uniquindio.unieventos.dto.evento.EventoFiltradoDTO;
-import co.edu.uniquindio.unieventos.dto.evento.ItemEventoDTO;
 import co.edu.uniquindio.unieventos.dto.evento.ObtenerEventoDTO;
 import co.edu.uniquindio.unieventos.model.documents.Evento;
-import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +31,7 @@ public interface EventoRepository extends MongoRepository<Evento, String> {
             + "   { 'fecha': { $eq: ?3 } }"
             + "]"
             + "}")
-    List<Evento> filtrarEventos(String nombre, String tipoEvento, String ciudad, LocalDateTime fecha);
+    List<Evento> filtrarEventos(String nombre, String tipoEvento, String ciudad, LocalDate fecha);
 
     Optional<ObtenerEventoDTO> findByLocalidadesNombre(String nombre);
 

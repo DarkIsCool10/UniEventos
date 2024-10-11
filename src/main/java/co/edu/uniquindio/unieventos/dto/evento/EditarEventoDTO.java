@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public record EditarEventoDTO(
@@ -32,7 +32,7 @@ public record EditarEventoDTO(
 
         @NotNull(message = "La fecha del evento es obligatoria.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        LocalDateTime fecha,
+        LocalDate fecha,
 
         @NotNull(message = "Debe agregar una imagen para la portada del evento")
         String imagenPortada,

@@ -26,11 +26,11 @@ public class Orden {
     private String id;
 
     private ObjectId idCliente;
-    private ObjectId idCupon;
-    private LocalDateTime fecha;
+    private String codigoCupon;
+    private LocalDate fecha;
     private String codigoPasarela;
     private Pago pago;
     private List<DetalleOrden> detalle;
-    private float total;
+    private double total;
 
 }

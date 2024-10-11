@@ -9,6 +9,7 @@ import co.edu.uniquindio.unieventos.dto.cuenta.*;
 import co.edu.uniquindio.unieventos.dto.autenticacion.MensajeDTO;
 import co.edu.uniquindio.unieventos.dto.orden.CrearOrdenDTO;
 import co.edu.uniquindio.unieventos.dto.orden.EditarOrdenDTO;
+import co.edu.uniquindio.unieventos.dto.orden.MostrarOrdenDTO;
 import co.edu.uniquindio.unieventos.exceptions.*;
 import co.edu.uniquindio.unieventos.model.documents.Carrito;
 import co.edu.uniquindio.unieventos.model.documents.Cuenta;
@@ -181,22 +182,24 @@ public class CuentaController {
 
     //==================================== METODOS ORDEN =============================================//
 
+    /*
     @PostMapping("/crear-orden")
-    public ResponseEntity<MensajeDTO<String>> crearOrden(@Valid @RequestBody CrearOrdenDTO ordenDTO) throws OrdenException {
+    public ResponseEntity<MensajeDTO<String>> crearOrden(@Valid @RequestBody CrearOrdenDTO ordenDTO, @Valid @RequestBody double totalOrden) throws OrdenException {
         try {
-            ordenService.crearOrden(ordenDTO);
+            ordenService.crearOrden(ordenDTO, totalOrden);
             return ResponseEntity.ok(new MensajeDTO<>(false, "Orden creada exitosamente"));
         }catch (OrdenException e){
             return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
         }
     }
 
-    @GetMapping("/mostrar-orden/{id}")
-    public ResponseEntity<MensajeDTO<Orden>> mostrarOrden(@Valid @PathVariable String id) throws OrdenException {
-        Orden orden = ordenService.obtenerOrdenPorId(id);
-        return ResponseEntity.ok(new MensajeDTO<>(false, orden));
-    }
+    */
 
+    @GetMapping("/mostrar-orden/{idOrden}")
+    public ResponseEntity<MensajeDTO<MostrarOrdenDTO>> mostrarOrden(@PathVariable String idOrden) throws CuentaException, OrdenException {
+            MostrarOrdenDTO ordenDTO = ordenService.mostrarOrden(idOrden);
+            return ResponseEntity.ok(new MensajeDTO<>(false, ordenDTO));
+    }
     @PutMapping("/actualizar-orden/{id}")
     public ResponseEntity<MensajeDTO<String>> actualizarOrden(@Valid @PathVariable String id, @Valid @RequestBody EditarOrdenDTO ordenDTO) throws OrdenException {
         try {
@@ -225,6 +228,18 @@ public class CuentaController {
     @PostMapping("/notificacion-pago")
     public void recibirNotificacionMercadoPago(@RequestBody Map<String, Object> requestBody) {
         ordenService.recibirNotificacionMercadoPago(requestBody);
+    }
+
+    @PostMapping("/crear-orden")
+    public ResponseEntity<?> crearOrdenDesdeCarrito(@RequestParam String idCliente,
+                                                    @RequestParam(required = false) String idCupon,
+                                                    @RequestParam(required = false) String codigoPasarela) {
+        try {
+            ordenService.crearOrdenDesdeCarrito(idCliente, idCupon, codigoPasarela);
+            return ResponseEntity.ok("Orden creada exitosamente.");
+        } catch (OrdenException | CarritoException | CuponException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

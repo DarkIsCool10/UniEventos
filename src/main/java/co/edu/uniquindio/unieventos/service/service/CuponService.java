@@ -23,7 +23,7 @@ public interface CuponService {
 
     List<ItemsCuponDTO> obtenerCuponesFiltrados(ItemsCuponDTO itemCuponDTO);
 
-    void aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException;
+    Cupon aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException;
     //Aun falta
 
 }
