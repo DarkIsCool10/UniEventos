@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -129,10 +130,10 @@ public class CuponServiceImp implements CuponService{
         String nombre = itemCuponDTO.nombre();
         cuponesFiltrados = cuponRepository.findByNombreContainingIgnoreCase(nombre);
 
-        LocalDateTime fechaVencimiento = itemCuponDTO.fechaVencimiento();
+        LocalDate fechaVencimiento = itemCuponDTO.fechaVencimiento();
         cuponesFiltrados = cuponRepository.findByFechaVencimientoAfter(fechaVencimiento);
 
-        LocalDateTime fechaApertura = itemCuponDTO.fechaApertura();
+        LocalDate fechaApertura = itemCuponDTO.fechaApertura();
             cuponesFiltrados = cuponRepository.findByFechaAperturaAfter(fechaApertura);
 
         Float descuento = itemCuponDTO.descuento();
@@ -148,8 +149,8 @@ public class CuponServiceImp implements CuponService{
         List<ItemsCuponDTO> itemsCuponDTO = cuponesFiltrados.stream()
                 .map(cupon -> new ItemsCuponDTO(
                         cupon.getNombre(),
-                        cupon.getFechaVencimiento(),
-                        cupon.getFechaApertura(),
+                        itemCuponDTO.fechaVencimiento(),
+                        itemCuponDTO.fechaApertura(),
                         cupon.getDescuento(),
                         cupon.getTipo(),
                         cupon.getEstado()))

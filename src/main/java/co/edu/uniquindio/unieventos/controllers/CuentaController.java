@@ -119,6 +119,12 @@ public class CuentaController {
         return ResponseEntity.ok(new MensajeDTO<>(false, "Items agregados exitosamente al carrito."));
     }
 
+    @GetMapping("/obtener-carrito-idUsuario/{idUsuario}")
+    public ResponseEntity<MensajeDTO<Carrito>> obtenerCarrito(@PathVariable String idUsuario) throws CarritoException {
+        Carrito carrito = carritoService.obtenerCarritoPorUsuario(idUsuario);
+        return ResponseEntity.ok(new MensajeDTO<>(false, carrito));
+    }
+
     @DeleteMapping("/eliminar-item-carrito/{idUsuario}/{nombreLocalidad}")
     public ResponseEntity<MensajeDTO<String>> eliminarItemDelCarrito(@PathVariable String idUsuario, @PathVariable String nombreLocalidad) throws CarritoException {
         carritoService.eliminarItemDelCarrito(idUsuario, nombreLocalidad);

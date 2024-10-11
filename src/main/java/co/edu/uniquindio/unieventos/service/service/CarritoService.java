@@ -15,6 +15,8 @@ public interface CarritoService {
 
     void crearCarrito(CrearCarritoDTO carritoDTO) throws CarritoException;
 
+    public Carrito obtenerCarritoPorUsuario(String idUsuario) throws CarritoException;
+
     Carrito agregarItemsAlCarrito(String idUsuario, List<DetalleCarritoDTO> nuevosItemsDTO) throws CarritoException;
 
     Carrito eliminarItemDelCarrito(String idUsuario, String nombreLocalidad) throws CarritoException;

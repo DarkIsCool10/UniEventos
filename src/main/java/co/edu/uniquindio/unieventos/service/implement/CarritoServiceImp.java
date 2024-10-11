@@ -47,7 +47,8 @@ public class CarritoServiceImp implements CarritoService {
         Carrito carritoGuardado = carritoRepository.save(carrito);
     }
 
-    private Carrito obtenerCarritoPorUsuario(String idUsuario) throws CarritoException {
+    @Override
+    public Carrito obtenerCarritoPorUsuario(String idUsuario) throws CarritoException {
         return carritoRepository.findByIdUsuario(idUsuario)
                 .orElseThrow(() -> new CarritoException("No se encontró un carrito para este usuario."));
     }

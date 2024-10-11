@@ -10,6 +10,7 @@ import co.edu.uniquindio.unieventos.dto.cupon.InformacionCuponDTO;
 import co.edu.uniquindio.unieventos.dto.cupon.ItemsCuponDTO;
 import co.edu.uniquindio.unieventos.dto.email.EmailDTO;
 import co.edu.uniquindio.unieventos.dto.evento.EventoFiltradoDTO;
+import co.edu.uniquindio.unieventos.dto.evento.FiltroEventoDTO;
 import co.edu.uniquindio.unieventos.dto.evento.ItemEventoDTO;
 import co.edu.uniquindio.unieventos.exceptions.*;
 import co.edu.uniquindio.unieventos.model.documents.Cupon;
@@ -95,9 +96,9 @@ public class PublicoController {
 
     //==================================== METODOS EVENTO =============================================//
 
-    @GetMapping("/filtrar-eventos")
-    public ResponseEntity<MensajeDTO<List<EventoFiltradoDTO>>> filtrarEventos(@Valid @RequestBody EventoFiltradoDTO eventoFiltradoDTO) throws EventoException {
-        List<EventoFiltradoDTO> eventosFiltrados = eventoService.filtrarEventos(eventoFiltradoDTO);
+    @PostMapping("/filtrar-eventos")
+    public ResponseEntity<MensajeDTO<List<EventoFiltradoDTO>>> filtrarEventos(@RequestBody FiltroEventoDTO filtroEventoDTO) throws EventoException {
+        List<EventoFiltradoDTO> eventosFiltrados = eventoService.filtrarEventos(filtroEventoDTO);
         return ResponseEntity.ok(new MensajeDTO<>(true, eventosFiltrados));
     }
 

@@ -21,7 +21,7 @@ public record EditarCuentaDTO(
         @Length(max = 100, message = "La dirección debe tener un máximo de 100 caracteres")
         String direccion,
 
-        @NotBlank(message = "La contraseña es requerida")
+        //@NotBlank(message = "La contraseña es requerida")
         @Length(min = 7, max = 20, message = "La contraseña debe tener un mínimo de 7 caracteres y un máximo de 20 caracteres")
         String password
 ) {

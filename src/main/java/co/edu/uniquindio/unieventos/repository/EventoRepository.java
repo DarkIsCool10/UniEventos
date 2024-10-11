@@ -33,6 +33,7 @@ public interface EventoRepository extends MongoRepository<Evento, String> {
             + "}")
     List<Evento> filtrarEventos(String nombre, String tipoEvento, String ciudad, LocalDate fecha);
 
+
     Optional<ObtenerEventoDTO> findByLocalidadesNombre(String nombre);
 
 }

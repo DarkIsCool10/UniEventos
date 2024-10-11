@@ -188,13 +188,13 @@ public class EventoServiceImp implements EventoService {
     }
 
     @Override
-    public List<EventoFiltradoDTO> filtrarEventos(EventoFiltradoDTO eventoFiltradoDTO) {
+    public List<EventoFiltradoDTO> filtrarEventos(FiltroEventoDTO filtroEventoDTO) {
         // Realizamos la consulta en el repositorio según los filtros proporcionados
         List<Evento> eventos = eventoRepo.filtrarEventos(
-                eventoFiltradoDTO.nombre(),
-                eventoFiltradoDTO.tipoEvento() != null ? eventoFiltradoDTO.tipoEvento().name() : null,
-                eventoFiltradoDTO.ciudad(),
-                eventoFiltradoDTO.fecha()
+                filtroEventoDTO.nombre(),
+                filtroEventoDTO.tipo() != null ? filtroEventoDTO.tipo().name() : null,
+                filtroEventoDTO.ciudad(),
+                filtroEventoDTO.fecha()
         );
 
         // Verificamos si no hay eventos
