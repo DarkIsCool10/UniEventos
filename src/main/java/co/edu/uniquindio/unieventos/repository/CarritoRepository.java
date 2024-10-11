@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface CarritoRepository extends MongoRepository<Carrito, String> {
     Optional<Carrito> findByIdUsuario(String idUsuario);
 
-    Carrito finCarritoPorIdUsuario(String idUsuario);
+
 }
