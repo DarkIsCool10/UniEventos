@@ -15,10 +15,8 @@ public record DetalleCarritoDTO(
         @NotBlank(message = "El nombre de la localidad no puede estar vacío")
         String nombreLocalidad,
 
-        @NotBlank(message = "El ID del evento es obligatorio")
-        String idEvento,
-
         @NotNull(message = "La fecha de agregación es obligatoria")
         @PastOrPresent(message = "La fecha de agregación no puede ser en el futuro")
         LocalDate fechaAgregacion
-) {}
+) {
+}
