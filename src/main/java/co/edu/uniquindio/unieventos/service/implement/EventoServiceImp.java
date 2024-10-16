@@ -189,13 +189,21 @@ public class EventoServiceImp implements EventoService {
 
     @Override
     public List<EventoFiltradoDTO> filtrarEventos(FiltroEventoDTO filtroEventoDTO) {
-        // Realizamos la consulta en el repositorio según los filtros proporcionados
-        List<Evento> eventos = eventoRepo.filtrarEventos(
-                filtroEventoDTO.nombre(),
-                filtroEventoDTO.tipo() != null ? filtroEventoDTO.tipo().name() : null,
-                filtroEventoDTO.ciudad(),
-                filtroEventoDTO.fecha()
-        );
+        // Inicializa la lista para almacenar los eventos
+        List<Evento> eventos;
+
+        // Realiza la consulta en el repositorio según los filtros proporcionados
+        if (filtroEventoDTO.nombre() != null || filtroEventoDTO.tipo() != null || filtroEventoDTO.ciudad() != null || filtroEventoDTO.fecha() != null) {
+            eventos = eventoRepo.filtrarEventos(
+                    filtroEventoDTO.nombre(),
+                    filtroEventoDTO.tipo() != null ? filtroEventoDTO.tipo().name() : null, // Solo pasa el tipo si no es nulo
+                    filtroEventoDTO.ciudad(),
+                    filtroEventoDTO.fecha()
+            );
+        } else {
+            // Si todos los filtros son nulos, devuelve todos los eventos (o lanza una excepción según tu lógica)
+            eventos = eventoRepo.findAll(); // Método que deberías tener en tu repositorio para obtener todos los eventos
+        }
 
         // Verificamos si no hay eventos
         if (eventos.isEmpty()) {
@@ -226,14 +234,22 @@ public class EventoServiceImp implements EventoService {
         );
     }
 
-    public ObtenerEventoDTO obtenerLocalidadPorNombre(String nombre) throws EventoException {
-        Optional<ObtenerEventoDTO> optionalLocalidad = eventoRepository.findByLocalidadesNombre(nombre);
 
-        if (optionalLocalidad.isEmpty()) {
-            throw new EventoException("No se encontró la localidad con el id: " + nombre);
-        }
+//    public Localidad obtenerLocalidadPorNombre(String nombre) throws EventoException {
+//        Optional<Localidad> optionalLocalidad = eventoRepository.findFirstByLocalidadesNombre(nombre);
+//
+//        if (optionalLocalidad.isEmpty()) {
+//            throw new EventoException("No se encontró la localidad con el nombre: " + nombre);
+//        }
+//
+//        Localidad localidad = optionalLocalidad.get();
+//        if (localidad.getPrecio() == null) {
+//            throw new EventoException("La localidad " + nombre + " no tiene un precio definido.");
+//        }
+//
+//        return localidad;
+//    }
 
-        return optionalLocalidad.get();
-    }
+
 
 }

@@ -9,6 +9,6 @@ public record CrearLocalidadDTO(
         @NotNull(message = "Debes ingresar la capacidad de la localidad")
         int capacidadMaxima,
         @NotNull(message = "Debes agregar un precio")
-        double precio
+        float precio
 ) {
 }

@@ -14,6 +14,6 @@ public class DetalleOrden {
     private ObjectId idEvento;
     private String nombreLocalidad;
     private int cantidad;
-    private double precio;
+    private Float precio;
 
 }

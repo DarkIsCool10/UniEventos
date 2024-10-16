@@ -5,6 +5,8 @@ import co.edu.uniquindio.unieventos.exceptions.EventoException;
 import co.edu.uniquindio.unieventos.model.documents.Evento;
 import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
 import co.edu.uniquindio.unieventos.model.vo.Localidad;
+import org.springframework.cglib.core.Local;
+
 import java.time.LocalDate;
 
 import java.time.LocalDateTime;
@@ -20,7 +22,7 @@ public interface EventoService {
 
     Evento obtenerInformacionEvento(String id) throws EventoException;
 
-    ObtenerEventoDTO obtenerLocalidadPorNombre(String nombre) throws EventoException;
+    //Localidad obtenerLocalidadPorNombre(String nombre) throws EventoException;
 
     List<ItemEventoDTO> listarEventos();
 

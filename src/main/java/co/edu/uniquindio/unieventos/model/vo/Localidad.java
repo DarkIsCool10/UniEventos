@@ -12,9 +12,9 @@ public class Localidad {
     private String nombre;
     private int entradasVendidas;
     private int capacidadMaxima;
-    private double precio;
+    private Float precio;
 
-    public Localidad(String nombre, int capacidadMaxima, double precio) {
+    public Localidad(String nombre, int capacidadMaxima, Float precio) {
         this.nombre = nombre;
         this.capacidadMaxima = capacidadMaxima;
         this.precio = precio;

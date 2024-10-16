@@ -35,7 +35,7 @@ public record MostrarOrdenDTO(
 
         @NotNull(message = "El precio es obligatorio.")
         @DecimalMin(value = "0.0", inclusive = false, message = "El precio debe ser mayor a 0.")
-        Double precio,
+        Float precio,
 
         @Min(value = 1, message = "La cantidad debe ser al menos 1.")
         int cantidad,

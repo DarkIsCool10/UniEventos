@@ -242,8 +242,10 @@ public class OrdenServiceImp implements OrdenService {
 
             // Obtener el evento y la localidad del ítem
             Evento evento = eventoService.obtenerInformacionEvento(item.getIdEvento().toString());
-            ObtenerEventoDTO localidad = eventoService.obtenerLocalidadPorNombre(item.getNombreLocalidad());
 
+            // Usar directamente el precio y el nombre de localidad desde el detalle de la orden
+            Float precioLocalidad = item.getPrecio();  // Aquí asumimos que el precio está en el detalle
+            String nombreLocalidad = item.getNombreLocalidad();
 
             // Crear el item de la pasarela
             PreferenceItemRequest itemRequest =
@@ -254,7 +256,7 @@ public class OrdenServiceImp implements OrdenService {
                             .categoryId(evento.getTipo().name())
                             .quantity(item.getCantidad())
                             .currencyId("COP")
-                            .unitPrice(BigDecimal.valueOf(localidad.precio()))
+                            .unitPrice(BigDecimal.valueOf(precioLocalidad))
                             .build();
 
 

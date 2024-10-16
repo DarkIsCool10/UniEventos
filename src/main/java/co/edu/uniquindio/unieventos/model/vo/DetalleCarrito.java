@@ -14,14 +14,10 @@ import java.time.LocalDateTime;
 @ToString
 public class DetalleCarrito {
 
+    @Id
+    private String idEvento;
     private int cantidad;
     private String nombreLocalidad;
-    private ObjectId idEvento;
     private LocalDateTime fechaAgregacion;
 
-    public DetalleCarrito(int cantidad,String nombreLocalidad, LocalDateTime fechaAgregacion) {
-        this.nombreLocalidad = nombreLocalidad;
-        this.cantidad = cantidad;
-        this.fechaAgregacion = fechaAgregacion;
-    }
 }

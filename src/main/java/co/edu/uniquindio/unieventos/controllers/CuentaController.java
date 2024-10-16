@@ -187,7 +187,7 @@ public class CuentaController {
         }
     }
 
-    @DeleteMapping("/eliminar/{id}")
+    @DeleteMapping("/eliminar-orden/{id}")
     public ResponseEntity<MensajeDTO<String>> eliminarOrden(@Valid @PathVariable String id) throws OrdenException {
         try {
             ordenService.eliminarOrden(id);

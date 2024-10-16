@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.repository;
 
 import co.edu.uniquindio.unieventos.dto.evento.ObtenerEventoDTO;
 import co.edu.uniquindio.unieventos.model.documents.Evento;
+import co.edu.uniquindio.unieventos.model.vo.Localidad;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -33,7 +34,6 @@ public interface EventoRepository extends MongoRepository<Evento, String> {
             + "}")
     List<Evento> filtrarEventos(String nombre, String tipoEvento, String ciudad, LocalDate fecha);
 
-
-    Optional<ObtenerEventoDTO> findByLocalidadesNombre(String nombre);
+    Optional<Localidad> findFirstByLocalidadesNombre(String nombre);
 
 }

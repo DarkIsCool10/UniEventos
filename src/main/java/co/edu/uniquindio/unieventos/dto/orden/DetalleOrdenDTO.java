@@ -19,5 +19,5 @@ public record DetalleOrdenDTO(
         int cantidad,
 
         @NotNull(message = "El precio es obligatorio.")
-        double precio
+        Float precio
 ) {}
