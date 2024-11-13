@@ -2,10 +2,7 @@ package co.edu.uniquindio.unieventos.controllers;
 
 import co.edu.uniquindio.unieventos.dto.autenticacion.MensajeDTO;
 import co.edu.uniquindio.unieventos.dto.autenticacion.TokenDTO;
-import co.edu.uniquindio.unieventos.dto.cuenta.CambiarPasswordDTO;
-import co.edu.uniquindio.unieventos.dto.cuenta.CrearCuentaDTO;
-import co.edu.uniquindio.unieventos.dto.cuenta.LoginDTO;
-import co.edu.uniquindio.unieventos.dto.cuenta.ValidarCodigoDTO;
+import co.edu.uniquindio.unieventos.dto.cuenta.*;
 import co.edu.uniquindio.unieventos.dto.cupon.InformacionCuponDTO;
 import co.edu.uniquindio.unieventos.dto.cupon.ItemsCuponDTO;
 import co.edu.uniquindio.unieventos.dto.email.EmailDTO;
@@ -67,6 +64,18 @@ public class PublicoController {
             return ResponseEntity.ok(new MensajeDTO<>(true, "Cuenta activada con exito"));
         }catch (CuentaException e){
             return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/enviar-codigo-recuperacion-contasenia")
+    public ResponseEntity<MensajeDTO<String>> enviarCodigoRecuperacion(@Valid @RequestBody CodigoContraseniaDTO codigoContraseniaDTO) throws CuentaException{
+        try {
+            cuentaService.enviarCodigoRecuperacionPassword(codigoContraseniaDTO);
+            return ResponseEntity.ok(new MensajeDTO<>(false, "Codigo enviado con a su emial correctamente"));
+        }catch (CuentaException e){
+            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
+        }catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, "Error al enviar el correo"));
         }
     }
 

@@ -66,17 +66,6 @@ public class CuentaController {
         return ResponseEntity.ok(new MensajeDTO<>(false, info));
     }
 
-    @PostMapping("/enviar-codigo-recuperacion-contasenia")
-    public ResponseEntity<MensajeDTO<String>> enviarCodigoRecuperacion(@Valid @RequestBody CodigoContraseniaDTO codigoContraseniaDTO) throws CuentaException{
-        try {
-            cuentaService.enviarCodigoRecuperacionPassword(codigoContraseniaDTO);
-            return ResponseEntity.ok(new MensajeDTO<>(false, "Codigo enviado con a su emial correctamente"));
-        }catch (CuentaException e){
-            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
-        }catch (RuntimeException e){
-            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, "Error al enviar el correo"));
-        }
-    }
 
     //==================================== METODOS PQR =============================================//
 
