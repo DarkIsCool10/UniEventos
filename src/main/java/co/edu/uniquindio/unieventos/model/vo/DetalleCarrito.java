@@ -18,4 +18,10 @@ public class DetalleCarrito {
     private String nombreLocalidad;
     private ObjectId idEvento;
     private LocalDateTime fechaAgregacion;
+
+    public DetalleCarrito(int cantidad,String nombreLocalidad, LocalDateTime fechaAgregacion) {
+        this.nombreLocalidad = nombreLocalidad;
+        this.cantidad = cantidad;
+        this.fechaAgregacion = fechaAgregacion;
+    }
 }

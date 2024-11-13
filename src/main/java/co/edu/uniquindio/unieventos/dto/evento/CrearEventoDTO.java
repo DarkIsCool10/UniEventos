@@ -4,9 +4,8 @@ import co.edu.uniquindio.unieventos.model.enums.EstadoEvento;
 import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public record CrearEventoDTO(
@@ -32,7 +31,7 @@ public record CrearEventoDTO(
         EstadoEvento estadoEvento,
 
         @NotNull(message = "La fecha del evento es obligatoria.")
-        LocalDateTime fecha,
+        LocalDate fecha,
 
         @NotEmpty(message = "La ciudad es obligatoria.")
         String ciudad,

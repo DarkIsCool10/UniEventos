@@ -1,18 +1,20 @@
 package co.edu.uniquindio.unieventos.service.implement;
 
+import co.edu.uniquindio.unieventos.dto.cuenta.InformacionCuentaDTO;
 import co.edu.uniquindio.unieventos.dto.evento.ObtenerEventoDTO;
 import co.edu.uniquindio.unieventos.dto.orden.CrearOrdenDTO;
 import co.edu.uniquindio.unieventos.dto.orden.DetalleOrdenDTO;
 import co.edu.uniquindio.unieventos.dto.orden.EditarOrdenDTO;
-import co.edu.uniquindio.unieventos.exceptions.OrdenException;
-import co.edu.uniquindio.unieventos.model.documents.Evento;
-import co.edu.uniquindio.unieventos.model.documents.Orden;
+import co.edu.uniquindio.unieventos.dto.orden.MostrarOrdenDTO;
+import co.edu.uniquindio.unieventos.exceptions.*;
+import co.edu.uniquindio.unieventos.model.documents.*;
+import co.edu.uniquindio.unieventos.model.vo.DetalleCarrito;
 import co.edu.uniquindio.unieventos.model.vo.DetalleOrden;
 import co.edu.uniquindio.unieventos.model.vo.Localidad;
 import co.edu.uniquindio.unieventos.model.vo.Pago;
+import co.edu.uniquindio.unieventos.repository.CarritoRepository;
 import co.edu.uniquindio.unieventos.repository.OrdenRepository;
-import co.edu.uniquindio.unieventos.service.service.EventoService;
-import co.edu.uniquindio.unieventos.service.service.OrdenService;
+import co.edu.uniquindio.unieventos.service.service.*;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
@@ -24,6 +26,7 @@ import com.mercadopago.resources.preference.Preference;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,16 +34,78 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
 public class OrdenServiceImp implements OrdenService {
 
     private final OrdenRepository ordenRepository;
-    private final EventoService eventoServicio;
+    private final EventoService eventoService;
+    private final CarritoService carritoService;
+    private final CarritoRepository carritoRepository;
+    private final CuentaService cuentaService;
+    private final CuponService cuponService;
 
     @Override
-    public void crearOrden(CrearOrdenDTO ordenDTO) throws OrdenException {
+    public void crearOrdenDesdeCarrito(String idCliente, String codigoCupon, String codigoPasarela) throws OrdenException, CarritoException, CuponException {
+
+        // Obtener el carrito del cliente, utilizando Optional
+        Carrito carrito = carritoRepository.findByIdUsuario(idCliente)
+                .orElseThrow(() -> new CarritoException("No se encontró el carrito para el usuario con ID: " + idCliente));
+
+        // Verificar que el carrito tenga ítems
+        if (carrito.getItems().isEmpty()) {
+            throw new OrdenException("El carrito debe tener al menos un detalle.");
+        }
+
+        // Convertir los detalles del carrito a detalles de la orden
+        List<DetalleOrdenDTO> detallesOrdenDTO = convertirCarritoADetalleOrdenDTO(carrito.getItems());
+
+        // Calcular el total de la orden
+        double totalOrden = calcularTotalOrden(detallesOrdenDTO, codigoCupon, LocalDateTime.now());
+
+        // Crear el DTO de la orden usando los datos del usuario
+        CrearOrdenDTO ordenDTO = new CrearOrdenDTO(
+                idCliente,
+                codigoCupon,  // El cupón ingresado por el usuario
+                codigoPasarela,  // El código de pasarela ingresado por el usuario
+                LocalDate.now(),
+                detallesOrdenDTO
+        );
+
+        // Llamar al método que crea la orden
+        crearOrden(ordenDTO, totalOrden);
+    }
+
+
+    // Convierte los ítems del carrito a DetalleOrdenDTO
+    private List<DetalleOrdenDTO> convertirCarritoADetalleOrdenDTO(List<DetalleCarrito> itemsCarrito) {
+        return itemsCarrito.stream().map(item -> {
+            // Obtener el evento
+            Evento evento = eventoService.obtenerInformacionEvento(item.getIdEvento().toString());
+            if (evento == null) {
+                throw new EventoException("No se encontró el evento con el ID: " + item.getIdEvento());
+            }
+
+            // Buscar la localidad por nombre
+            Localidad localidad = evento.getLocalidades().stream()
+                    .filter(loc -> loc.getNombre().equals(item.getNombreLocalidad()))
+                    .findFirst()
+                    .orElseThrow(() -> new EventoException("No se encontró la localidad: " + item.getNombreLocalidad()));
+
+            // Retornar DetalleOrdenDTO con el precio de la localidad
+            return new DetalleOrdenDTO(
+                    item.getIdEvento().toString(),
+                    item.getNombreLocalidad(),
+                    item.getCantidad(),
+                    localidad.getPrecio() // Aquí obtenemos el precio de la localidad
+            );
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void crearOrden(CrearOrdenDTO ordenDTO, double totalOrden) throws OrdenException {
 
         if (ordenDTO.detalleOrden().isEmpty()) {
             throw new OrdenException("La orden debe tener al menos un detalle.");
@@ -49,33 +114,86 @@ public class OrdenServiceImp implements OrdenService {
         // Crear la instancia de Orden usando el DTO
         Orden orden = new Orden();
         orden.setIdCliente(new ObjectId(ordenDTO.idCliente()));
-        orden.setIdCupon(ordenDTO.idCupon() != null ? new ObjectId(ordenDTO.idCupon()) : null);
-        orden.setFecha(LocalDateTime.now());
+        orden.setCodigoCupon(ordenDTO.codigoCupon() != null ? (ordenDTO.codigoCupon()) : null);
+        orden.setFecha(LocalDate.now());
         orden.setCodigoPasarela(ordenDTO.codigoPasarela());
-        orden.setTotal(ordenDTO.total());
 
         // Convertir DetalleOrdenDTO a DetalleOrden y asignarlos a la orden
         List<DetalleOrden> detallesOrden = convertirDetalleDTOADetalle(ordenDTO.detalleOrden());
-
-
         orden.setDetalle(detallesOrden);
 
-        // Guardar la orden
-        Orden ordenGuardada = ordenRepository.save(orden);
+        // Asignar el total calculado a la orden
+        orden.setTotal(totalOrden);
+
+        // Guardar la orden en el repositorio
+        ordenRepository.save(orden);
     }
 
+
+    // Convierte los DetalleOrdenDTO a DetalleOrden
     private List<DetalleOrden> convertirDetalleDTOADetalle(List<DetalleOrdenDTO> detalleOrdenDTO) {
         return detalleOrdenDTO.stream()
                 .map(dto -> new DetalleOrden(
                         new ObjectId(dto.idEvento()),
-                        dto.precio(),
                         dto.nombreLocalidad(),
-                        dto.cantidad()
-                ))
+                        dto.cantidad(),
+                        dto.precio()
+                        ))
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public MostrarOrdenDTO mostrarOrden(String idOrden) throws OrdenException, CuentaException {
+        // Obtener la orden de la base de datos
+        Orden orden = obtenerOrdenPorId(idOrden);
+
+        // Obtener información del usuario
+        InformacionCuentaDTO usuario = cuentaService.obtenerInformacionCuenta(orden.getIdCliente().toString());
+
+        // Obtener información del evento
+        DetalleOrden detalle = orden.getDetalle().get(0); // Asumiendo que hay al menos un detalle en la orden
+        Evento evento = eventoService.obtenerInformacionEvento(detalle.getIdEvento().toString());
+
+
+        // Crear el DTO MostrarOrdenDTO
+        return new MostrarOrdenDTO(
+                usuario.id(),
+                usuario.nombre(),
+                evento.getId(),
+                evento.getNombre(),
+                orden.getFecha(),
+                evento.getFecha(),
+                evento.getTipo(),
+                detalle.getNombreLocalidad(),
+                detalle.getPrecio(),
+                detalle.getCantidad(),
+                orden.getCodigoCupon() != null ? orden.getCodigoCupon() : null,
+                orden.getTotal()
+        );
+    }
+
+    private double calcularTotalOrden(List<DetalleOrdenDTO> detallesOrdenDTO, String codigoCupon, LocalDateTime fechaCompra) throws CuponException {
+        // Calcular el total de los detalles
+        double total = detallesOrdenDTO.stream()
+                .mapToDouble(detalle -> detalle.precio() * detalle.cantidad())
+                .sum();
+
+        // Aplicar el cupón si existe
+        if (codigoCupon != null && !codigoCupon.isEmpty()) {
+            // Llama a cuponService para validar y aplicar el cupón
+            Cupon cupon = cuponService.aplicarCupon(codigoCupon, fechaCompra);
+
+            // Restar el descuento del cupón al total
+            double descuento = total * (cupon.getDescuento() / 100.0);
+            total -= descuento;
+        }
+
+        return total;
+    }
+
+
     // Obtener una orden por ID
+    @Override
     public Orden obtenerOrdenPorId(String id) throws OrdenException {
         return ordenRepository.findById(id).orElseThrow(() -> new OrdenException("Orden no encontrada"));
     }
@@ -91,13 +209,14 @@ public class OrdenServiceImp implements OrdenService {
             throw new OrdenException("No existe una orden con el id dado");
         }
 
-        orden.setIdCupon(new ObjectId(ordenDTO.idCupon()));
+        orden.setCodigoCupon(ordenDTO.idCupon());
         orden.setTotal(ordenDTO.total());
 
         ordenRepository.save(orden);
     }
 
     // Eliminar una orden
+    @Override
     public void eliminarOrden(String id) throws OrdenException {
 
         //Buscamos la cuenta del usuario que se quiere eliminar
@@ -122,8 +241,8 @@ public class OrdenServiceImp implements OrdenService {
         for(DetalleOrden item : ordenGuardada.getDetalle()){
 
             // Obtener el evento y la localidad del ítem
-            Evento evento = eventoServicio.obtenerInformacionEvento(item.getIdEvento().toString());
-            ObtenerEventoDTO localidad = eventoServicio.obtenerLocalidadPorNombre(item.getNombreLocalidad());
+            Evento evento = eventoService.obtenerInformacionEvento(item.getIdEvento().toString());
+            ObtenerEventoDTO localidad = eventoService.obtenerLocalidadPorNombre(item.getNombreLocalidad());
 
 
             // Crear el item de la pasarela

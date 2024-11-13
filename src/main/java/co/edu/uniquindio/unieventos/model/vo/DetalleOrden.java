@@ -12,8 +12,8 @@ import org.bson.types.ObjectId;
 public class DetalleOrden {
 
     private ObjectId idEvento;
-    private float precio;
     private String nombreLocalidad;
     private int cantidad;
+    private double precio;
 
 }

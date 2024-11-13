@@ -159,7 +159,7 @@ public class CuponServiceImp implements CuponService{
     }
 
     @Override
-    public void aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException {
+    public Cupon aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException {
         // Buscar el cupón por código
         Optional<Cupon> cuponOpt = cuponRepository.findById(codigoCupon);
 
@@ -189,7 +189,9 @@ public class CuponServiceImp implements CuponService{
         if (cupon.getTipo() == TipoCupon.UNICO) {
             cupon.setUtilizado(true);
             cuponRepository.save(cupon); // Guarda el cupón actualizado
+            return cupon;
         }
+        return cupon;
     }
 
 }

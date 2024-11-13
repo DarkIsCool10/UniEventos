@@ -2,13 +2,13 @@ package co.edu.uniquindio.unieventos.dto.evento;
 
 import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record ItemEventoDTO(
         String urlImagenPortada,
         String nombre,
         TipoEvento tipoEvento,
-        LocalDateTime fecha,
+        LocalDate fecha,
         String direccion,
         String ciudad
 ) {

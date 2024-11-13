@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.service.implement;
 
 import co.edu.uniquindio.unieventos.dto.carrito.CrearCarritoDTO;
 import co.edu.uniquindio.unieventos.dto.carrito.DetalleCarritoDTO;
+import co.edu.uniquindio.unieventos.dto.carrito.InformacionEventoCarritoDTO;
 import co.edu.uniquindio.unieventos.exceptions.CarritoException;
 import co.edu.uniquindio.unieventos.model.documents.Carrito;
 import co.edu.uniquindio.unieventos.model.documents.Evento;
@@ -46,8 +47,7 @@ public class CarritoServiceImp implements CarritoService {
         Carrito carritoGuardado = carritoRepository.save(carrito);
     }
 
-    @Override
-    public Carrito obtenerCarritoPorUsuario(String idUsuario) throws CarritoException {
+    private Carrito obtenerCarritoPorUsuario(String idUsuario) throws CarritoException {
         return carritoRepository.findByIdUsuario(idUsuario)
                 .orElseThrow(() -> new CarritoException("No se encontró un carrito para este usuario."));
     }
@@ -65,11 +65,30 @@ public class CarritoServiceImp implements CarritoService {
         // Convertir los nuevos items de DTO a DetalleCarrito
         List<DetalleCarrito> nuevosItems = convertirItemsDTOAItems(nuevosItemsDTO);
 
-        // Iterar sobre los nuevos ítems y agregarlos o actualizar la cantidad si ya existen
+        // Validar la disponibilidad de entradas antes de agregar al carrito
+        boolean disponibilidad = validarDisponibilidadEntradas(idUsuario);
+
+        // Si no hay suficiente disponibilidad, lanzar una excepción
+        if (!disponibilidad) {
+            throw new CarritoException("No hay suficientes entradas disponibles para uno o más ítems en el carrito.");
+        }
+
         for (DetalleCarrito nuevoItem : nuevosItems) {
+            // Obtener el evento para validar las localidades
+            Evento evento = eventoRepository.findById(String.valueOf(nuevoItem.getIdEvento()))
+                    .orElseThrow(() -> new CarritoException("El evento con ID " + nuevoItem.getIdEvento() + " no existe."));
+
+            // Validar que la localidad exista en el evento
+            boolean localidadValida = evento.getLocalidades().stream()
+                    .anyMatch(localidad -> localidad.getNombre().equals(nuevoItem.getNombreLocalidad()));
+
+            if (!localidadValida) {
+                throw new CarritoException("La localidad " + nuevoItem.getNombreLocalidad() + " no es válida para el evento " + evento.getNombre());
+            }
+
+            // Lógica para agregar o actualizar los ítems en el carrito
             boolean itemExistente = false;
 
-            // Buscar si el ítem ya está en el carrito
             for (DetalleCarrito itemActual : carrito.getItems()) {
                 if (itemActual.getNombreLocalidad().equals(nuevoItem.getNombreLocalidad()) &&
                         itemActual.getIdEvento().equals(nuevoItem.getIdEvento())) {
@@ -90,6 +109,8 @@ public class CarritoServiceImp implements CarritoService {
         // Guardar y retornar el carrito actualizado
         return carritoRepository.save(carrito);
     }
+
+
 
     @Override
     public Carrito eliminarItemDelCarrito(String idUsuario, String nombreLocalidad) throws CarritoException {
@@ -115,13 +136,43 @@ public class CarritoServiceImp implements CarritoService {
     }
 
     @Override
-    public List<DetalleCarrito> listarProductosEnCarrito(String idUsuario) throws CarritoException {
+    public List<InformacionEventoCarritoDTO> listarProductosEnCarrito(String idUsuario) throws CarritoException {
         // Obtener el carrito actual del usuario
         Carrito carrito = obtenerCarritoPorUsuario(idUsuario);
 
-        // Retornar los ítems del carrito
-        return carrito.getItems();
+        // Lista para almacenar los detalles del carrito junto con la información del evento
+        List<InformacionEventoCarritoDTO> detallesConEventos = new ArrayList<>();
+
+        // Iterar sobre los ítems del carrito
+        for (DetalleCarrito item : carrito.getItems()) {
+            // Obtener el evento asociado al ítem
+            Evento evento = eventoRepository.findById(String.valueOf(item.getIdEvento()))
+                    .orElseThrow(() -> new CarritoException("El evento con ID " + item.getIdEvento() + " no existe."));
+
+            // Convertir DetalleCarrito en DetalleCarritoDTO
+            DetalleCarritoDTO detalle = new DetalleCarritoDTO(
+                    item.getCantidad(),
+                    item.getNombreLocalidad(),
+                    item.getFechaAgregacion().toLocalDate() // Asegurarse de que esté en formato LocalDate
+            );
+
+            // Crear un DTO con la información del evento
+            InformacionEventoCarritoDTO informacionEvento = new InformacionEventoCarritoDTO(
+                    detalle,
+                    evento.getImagenPortada(),  // Asegúrate de que esta imagen sea del tipo correcto
+                    evento.getNombre(),
+                    evento.getDireccion(),
+                    evento.getFecha()
+            );
+
+            // Agregarlo a la lista
+            detallesConEventos.add(informacionEvento);
+        }
+
+        // Retornar la lista de ítems con la información de sus eventos
+        return detallesConEventos;
     }
+
 
     @Override
     public double calcularTotalCarrito(String idUsuario) throws CarritoException {
@@ -159,9 +210,8 @@ public class CarritoServiceImp implements CarritoService {
         // Iterar sobre los ítems del carrito
         for (DetalleCarrito item : carrito.getItems()) {
             // Obtener el evento asociado al detalle
-            ObjectId idEvento = item.getIdEvento();
-            Evento evento = eventoRepository.findById(idEvento.toString())
-                    .orElseThrow(() -> new CarritoException("Evento no encontrado para el ID: " + idEvento));
+            Evento evento = eventoRepository.findById(item.getIdEvento().toString())
+                    .orElseThrow(() -> new CarritoException("Evento no encontrado para el ID: " + item.getIdEvento()));
 
             // Buscar la localidad correspondiente en el evento
             Localidad localidad = evento.getLocalidades().stream()
@@ -176,19 +226,22 @@ public class CarritoServiceImp implements CarritoService {
             if (entradasDisponibles < item.getCantidad()) {
                 throw new CarritoException("No hay suficientes entradas disponibles para la localidad: " + item.getNombreLocalidad());
             }
+            // Si hay suficientes entradas, sumar la cantidad del carrito a las entradas vendidas
+            localidad.setEntradasVendidas(localidad.getEntradasVendidas() + item.getCantidad());
+            // Guardar el evento con las entradas actualizadas
+            eventoRepository.save(evento);
         }
 
         // Si todas las validaciones pasan, retornar true
+
         return true;
     }
 
-    @Override
-    public List<DetalleCarrito> convertirItemsDTOAItems(List<DetalleCarritoDTO> itemsCarritoDTO) {
+    private List<DetalleCarrito> convertirItemsDTOAItems(List<DetalleCarritoDTO> itemsCarritoDTO) {
         return itemsCarritoDTO.stream()
                 .map(dto -> new DetalleCarrito(
                         dto.cantidad(),
                         dto.nombreLocalidad(),
-                        new ObjectId(dto.idEvento()),
                         LocalDateTime.now() // Establecemos la fecha de agregación como el momento actual
                 ))
                 .collect(Collectors.toList());

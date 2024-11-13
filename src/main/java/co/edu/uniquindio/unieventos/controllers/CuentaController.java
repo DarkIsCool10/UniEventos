@@ -1,37 +1,27 @@
 package co.edu.uniquindio.unieventos.controllers;
 
 import co.edu.uniquindio.unieventos.dto.PQR.CrearPQRDTO;
-import co.edu.uniquindio.unieventos.dto.PQR.InformacionPQRDTO;
 import co.edu.uniquindio.unieventos.dto.PQR.ItemPQRDTO;
-import co.edu.uniquindio.unieventos.dto.carrito.CrearCarritoDTO;
 import co.edu.uniquindio.unieventos.dto.carrito.DetalleCarritoDTO;
+import co.edu.uniquindio.unieventos.dto.carrito.InformacionEventoCarritoDTO;
 import co.edu.uniquindio.unieventos.dto.cuenta.*;
 import co.edu.uniquindio.unieventos.dto.autenticacion.MensajeDTO;
-import co.edu.uniquindio.unieventos.dto.orden.CrearOrdenDTO;
 import co.edu.uniquindio.unieventos.dto.orden.EditarOrdenDTO;
+import co.edu.uniquindio.unieventos.dto.orden.MostrarOrdenDTO;
 import co.edu.uniquindio.unieventos.exceptions.*;
 import co.edu.uniquindio.unieventos.model.documents.Carrito;
-import co.edu.uniquindio.unieventos.model.documents.Cuenta;
-import co.edu.uniquindio.unieventos.model.documents.Orden;
 import co.edu.uniquindio.unieventos.model.documents.PQR;
-import co.edu.uniquindio.unieventos.model.vo.DetalleCarrito;
-import co.edu.uniquindio.unieventos.model.vo.Usuario;
-import co.edu.uniquindio.unieventos.repository.CuentaRepository;
 import co.edu.uniquindio.unieventos.service.service.*;
 import com.mercadopago.resources.preference.Preference;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.mail.event.MailEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/cuenta")
@@ -121,25 +111,8 @@ public class CuentaController {
         return ResponseEntity.ok(new MensajeDTO<>(true, pqrsObtenidos));
     }
 
-    //==================================== METODOS CUPON =============================================//
 
-    @PostMapping("/aplicar-cupon")
-    public ResponseEntity<MensajeDTO<String>> aplicarCupon(@RequestParam String codigoCupon, @RequestParam LocalDateTime fechaCompra) throws CuponException {
-        try {
-            cuponService.aplicarCupon(codigoCupon, fechaCompra);
-            return ResponseEntity.ok(new MensajeDTO<>(true, "Cupón aplicado con éxito"));
-        } catch (CuponException e) {
-            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
-        }
-    }
-
-        //==================================== METODOS CARRITO =============================================//
-
-    @GetMapping("/obtener-carrito/{idUsuario}")
-    public ResponseEntity<MensajeDTO<Carrito>> obtenerCarritoPorUsuario(@PathVariable String idUsuario) throws CarritoException {
-        Carrito carrito = carritoService.obtenerCarritoPorUsuario(idUsuario);
-        return ResponseEntity.ok(new MensajeDTO<>(false, carrito));
-    }
+    //==================================== METODOS CARRITO =============================================//
 
     @PutMapping("/agregar-items-carrito/{idUsuario}")
     public ResponseEntity<MensajeDTO<String>> agregarItemsAlCarrito(@PathVariable String idUsuario, @Valid @RequestBody List<DetalleCarritoDTO> itemsCarritoDTO) throws CarritoException {
@@ -160,8 +133,8 @@ public class CuentaController {
     }
 
     @GetMapping("/listar-productos-carrito/{idUsuario}")
-    public ResponseEntity<MensajeDTO<List<DetalleCarrito>>> listarProductosEnCarrito(@PathVariable String idUsuario) throws CarritoException {
-        List<DetalleCarrito> itemsCarrito = carritoService.listarProductosEnCarrito(idUsuario);
+    public ResponseEntity<MensajeDTO<List<InformacionEventoCarritoDTO>>> listarProductosEnCarrito(@PathVariable String idUsuario) throws CarritoException {
+        List<InformacionEventoCarritoDTO> itemsCarrito = carritoService.listarProductosEnCarrito(idUsuario);
         return ResponseEntity.ok(new MensajeDTO<>(false, itemsCarrito));
     }
 
@@ -181,22 +154,24 @@ public class CuentaController {
 
     //==================================== METODOS ORDEN =============================================//
 
+    /*
     @PostMapping("/crear-orden")
-    public ResponseEntity<MensajeDTO<String>> crearOrden(@Valid @RequestBody CrearOrdenDTO ordenDTO) throws OrdenException {
+    public ResponseEntity<MensajeDTO<String>> crearOrden(@Valid @RequestBody CrearOrdenDTO ordenDTO, @Valid @RequestBody double totalOrden) throws OrdenException {
         try {
-            ordenService.crearOrden(ordenDTO);
+            ordenService.crearOrden(ordenDTO, totalOrden);
             return ResponseEntity.ok(new MensajeDTO<>(false, "Orden creada exitosamente"));
         }catch (OrdenException e){
             return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
         }
     }
 
-    @GetMapping("/mostrar-orden/{id}")
-    public ResponseEntity<MensajeDTO<Orden>> mostrarOrden(@Valid @PathVariable String id) throws OrdenException {
-        Orden orden = ordenService.obtenerOrdenPorId(id);
-        return ResponseEntity.ok(new MensajeDTO<>(false, orden));
-    }
+    */
 
+    @GetMapping("/mostrar-orden/{idOrden}")
+    public ResponseEntity<MensajeDTO<MostrarOrdenDTO>> mostrarOrden(@PathVariable String idOrden) throws CuentaException, OrdenException {
+            MostrarOrdenDTO ordenDTO = ordenService.mostrarOrden(idOrden);
+            return ResponseEntity.ok(new MensajeDTO<>(false, ordenDTO));
+    }
     @PutMapping("/actualizar-orden/{id}")
     public ResponseEntity<MensajeDTO<String>> actualizarOrden(@Valid @PathVariable String id, @Valid @RequestBody EditarOrdenDTO ordenDTO) throws OrdenException {
         try {
@@ -225,6 +200,18 @@ public class CuentaController {
     @PostMapping("/notificacion-pago")
     public void recibirNotificacionMercadoPago(@RequestBody Map<String, Object> requestBody) {
         ordenService.recibirNotificacionMercadoPago(requestBody);
+    }
+
+    @PostMapping("/crear-orden")
+    public ResponseEntity<MensajeDTO<String>> crearOrdenDesdeCarrito(@RequestParam String idCliente,
+                                                    @RequestParam(required = false) String idCupon,
+                                                    @RequestParam(required = false) String codigoPasarela) {
+        try {
+            ordenService.crearOrdenDesdeCarrito(idCliente, idCupon, codigoPasarela);
+            return ResponseEntity.ok(new MensajeDTO<>(false, "Orden desde carrito exitosamente."));
+        } catch (OrdenException | CarritoException | CuponException e) {
+            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
+        }
     }
 
 }

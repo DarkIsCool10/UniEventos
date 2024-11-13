@@ -466,35 +466,35 @@ db.pqr.insertMany([
     {
         _id: ObjectId('66b4c2a58e2100008f50b1b1'),
         idUsuario: ObjectId('66a2a9aaa8620e3c1c5437be'), // Pepito Perez
-        categoriaPQR: 'QUEJA',
+        categoriaPQR: 'SERVICIO_CLIENTE',
         descripcion: 'El evento fue cancelado sin previo aviso.',
         _class: 'co.edu.uniquindio.proyecto.modelo.documents.PQR'
     },
     {
         _id: ObjectId('66b4c2a58e2100008f50b1b2'),
         idUsuario: ObjectId('66a2c14dd9219911cd34f2c0'), // Rosa Lopez
-        categoriaPQR: 'RECLAMO',
+        categoriaPQR: 'FACTURACION',
         descripcion: 'No recibí el descuento prometido en el evento.',
         _class: 'co.edu.uniquindio.proyecto.modelo.documents.PQR'
     },
     {
         _id: ObjectId('66b4c2a58e2100008f50b1b3'),
         idUsuario: ObjectId('66a3d24a7f421707baf98ab0'), // Jorge Ramirez
-        categoriaPQR: 'SUGERENCIA',
+        categoriaPQR: 'RECLAMO',
         descripcion: 'Sería bueno contar con más opciones de pago.',
         _class: 'co.edu.uniquindio.proyecto.modelo.documents.PQR'
     },
     {
         _id: ObjectId('66b4c2a58e2100008f50b1b4'),
         idUsuario: ObjectId('66a3d2424d629f0716d1b111'), // Mariana Moreno
-        categoriaPQR: 'PETICION',
+        categoriaPQR: 'SERVICIO_CLIENTE',
         descripcion: 'Solicito más información sobre próximos eventos.',
         _class: 'co.edu.uniquindio.proyecto.modelo.documents.PQR'
     },
     {
         _id: ObjectId('66b4c2a58e2100008f50b1b5'),
         idUsuario: ObjectId('66b3c1a28e2100008f40a2d2'), // Julian Morales
-        categoriaPQR: 'QUEJA',
+        categoriaPQR: 'OTRO',
         descripcion: 'El sistema no me dejó inscribirme en el evento.',
         _class: 'co.edu.uniquindio.proyecto.modelo.documents.PQR'
     }
