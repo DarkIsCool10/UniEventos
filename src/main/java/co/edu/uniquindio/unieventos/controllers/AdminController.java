@@ -188,13 +188,14 @@ public class AdminController {
         return ResponseEntity.ok().body(new MensajeDTO<>(false, respuesta));
     }
 
-    @DeleteMapping("/eliminar")
-    public ResponseEntity<MensajeDTO<String>> eliminar(@RequestParam("idImagen") String idImagen)  throws Exception{
-        imagesService.eliminarImagen( idImagen );
-        return ResponseEntity.ok().body(new MensajeDTO<>(false, "La imagen fue eliminada correctamente"));
+    @DeleteMapping("/eliminar/{idImagen}")
+    public ResponseEntity<MensajeDTO<String>> eliminar(@PathVariable String idImagen)  throws Exception{
+        try {
+            imagesService.eliminarImagen( idImagen );
+            return ResponseEntity.ok().body(new MensajeDTO<>(false, "La imagen fue eliminada correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
+        }
     }
-
-
-
 
 }
