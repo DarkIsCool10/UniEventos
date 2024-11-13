@@ -4,15 +4,21 @@ import co.edu.uniquindio.unieventos.configs.JWTUtils;
 import co.edu.uniquindio.unieventos.dto.autenticacion.TokenDTO;
 import co.edu.uniquindio.unieventos.dto.carrito.CrearCarritoDTO;
 import co.edu.uniquindio.unieventos.dto.cuenta.*;
+import co.edu.uniquindio.unieventos.dto.cupon.CrearCuponDTO;
 import co.edu.uniquindio.unieventos.dto.email.EmailDTO;
 import co.edu.uniquindio.unieventos.exceptions.CarritoException;
 import co.edu.uniquindio.unieventos.exceptions.CuentaException;
+import co.edu.uniquindio.unieventos.exceptions.CuponException;
 import co.edu.uniquindio.unieventos.model.documents.Cuenta;
+import co.edu.uniquindio.unieventos.model.documents.Cupon;
 import co.edu.uniquindio.unieventos.model.enums.EstadoCuenta;
+import co.edu.uniquindio.unieventos.model.enums.EstadoCupon;
 import co.edu.uniquindio.unieventos.model.enums.Rol;
+import co.edu.uniquindio.unieventos.model.enums.TipoCupon;
 import co.edu.uniquindio.unieventos.model.vo.CodigoValidacion;
 import co.edu.uniquindio.unieventos.model.vo.Usuario;
 import co.edu.uniquindio.unieventos.repository.CuentaRepository;
+import co.edu.uniquindio.unieventos.repository.CuponRepository;
 import co.edu.uniquindio.unieventos.service.service.CarritoService;
 import co.edu.uniquindio.unieventos.service.service.CuentaService;
 import co.edu.uniquindio.unieventos.service.service.EmailService;
@@ -34,7 +40,7 @@ public class CuentaServiceImp implements CuentaService {
     private final CarritoService carritoService;
     private final JWTUtils jwtUtils;
     private final EmailService emailService;
-
+    private final CuponRepository cuponRepository;
 
     // Metodo de apoyo para buscar una cuenta por ID y devolver un Optional<Cuenta>
     private Optional<Cuenta> obtenerCuentaPorId(String idCuenta) {
@@ -93,6 +99,7 @@ public class CuentaServiceImp implements CuentaService {
         String cuerpo = "Tu código de validación es: " + codigoValidacion;
         EmailDTO emailDTO = new EmailDTO(asunto, cuerpo, cuentaDTO.email());
         emailService.enviarCorreo(emailDTO);
+
     }
 
     /**
@@ -119,14 +126,34 @@ public class CuentaServiceImp implements CuentaService {
         cuenta.setCodigoVerificacionRegistro(null);
         cuentaRepository.save(cuenta);
 
+        cuponBienvenida(cuenta.getEmail());
+
         return validarCodigoDTO;
     }
 
-    // Metoodo para generar un código de validación de 4 cifras
+    private void cuponBienvenida(String email){
+        String codigoCupon = generarCodigoValidacion();
+        String nombre = "Cupon de Bienvenida";
+        float descuento = 15.5f;
+        LocalDateTime fechaVencimiento = LocalDateTime.now().plusMonths(1);
+        LocalDateTime fechaApertura = LocalDateTime.now();
+        TipoCupon tipoCupon = TipoCupon.UNICO;
+        Cupon nuevoCupon = new Cupon(nombre, codigoCupon,fechaVencimiento,fechaApertura,descuento,tipoCupon,EstadoCupon.DISPONIBLE, false);
+        emailService.enviarCorreo(new EmailDTO("Bienvenido, gracias por confiar en nosotros", "Al registrarte tienes un código del 15% de descuento: "+ codigoCupon +" este código es redimible una vez en cualquier orden", email));
+        cuponRepository.save(nuevoCupon);
+    }
+
+    // Metoodo para generar un código de validación de 5 cifras
     private String generarCodigoValidacion() {
+        String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         Random random = new Random();
-        int code = random.nextInt(9000) + 1000;
-        return String.valueOf(code);
+        StringBuilder codigo = new StringBuilder(5);
+
+        for (int i = 0; i < 5; i++) {
+            int index = random.nextInt(caracteres.length());
+            codigo.append(caracteres.charAt(index));
+        }
+        return codigo.toString();
     }
 
     //Metodo para encriptar la contraseña

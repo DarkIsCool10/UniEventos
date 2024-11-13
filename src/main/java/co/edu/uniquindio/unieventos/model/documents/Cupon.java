@@ -32,4 +32,15 @@ public class Cupon {
 
     private boolean utilizado;
 
+    public Cupon(String nombre, String codigo, LocalDateTime fechaVencimiento, LocalDateTime fechaApertura, float descuento, TipoCupon tipo, EstadoCupon estado, boolean utilizado) {
+        this.id = id;
+        this.nombre = nombre;
+        this.codigo = codigo;
+        this.fechaVencimiento = fechaVencimiento;
+        this.fechaApertura = fechaApertura;
+        this.descuento = descuento;
+        this.tipo = tipo;
+        this.estado = estado;
+        this.utilizado = utilizado;
+    }
 }
