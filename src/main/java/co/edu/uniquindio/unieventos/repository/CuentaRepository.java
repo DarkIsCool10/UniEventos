@@ -18,4 +18,6 @@ public interface CuentaRepository extends MongoRepository<Cuenta, String>{
     @Query("{'codigoVerificacionContrasenia': ?0}")
     Optional<Cuenta> existBycodigoVerificacionContrasenia(String codigoVerificacionContrasenia);
 
+    Optional<Cuenta> findByCodigoVerificacionContrasenia(String codigoVerificacionContrasenia);
+
 }

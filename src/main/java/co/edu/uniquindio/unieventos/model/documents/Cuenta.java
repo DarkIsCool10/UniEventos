@@ -28,6 +28,8 @@ public class Cuenta {
     private String password;
     private String codigoVerificacionRegistro;
     private String codigoVerificacionContrasenia;
+    private LocalDateTime fechaExpiracionCodigo;
+    private LocalDateTime fechaExpiracionCodigoContrasenia;
     private LocalDateTime fechaRegistro;
     private Rol rol;
     private EstadoCuenta estado;

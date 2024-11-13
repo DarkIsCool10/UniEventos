@@ -82,6 +82,7 @@ public class CuentaServiceImp implements CuentaService {
         // Generar y asignar el código de validación
         String codigoValidacion = generarCodigoValidacion();
         nuevaCuenta.setCodigoVerificacionRegistro(codigoValidacion);
+        nuevaCuenta.setFechaExpiracionCodigo(LocalDateTime.now().plusMinutes(10));
 
         // Guardar la cuenta en la base de datos
         Cuenta cuentaCreada = cuentaRepository.save(nuevaCuenta);
@@ -116,14 +117,32 @@ public class CuentaServiceImp implements CuentaService {
         Cuenta cuenta = cuentaRepository.findByEmail(validarCodigoDTO.email())
                 .orElseThrow(() -> new CuentaException("No se encontró la cuenta."));
 
+        // Verificar si el código ha expirado
+        if (cuenta.getFechaExpiracionCodigo() != null && LocalDateTime.now().isAfter(cuenta.getFechaExpiracionCodigo())) {
+            // El código ha expirado, genera uno nuevo
+            String nuevoCodigo = generarCodigoValidacion();
+            cuenta.setCodigoVerificacionRegistro(nuevoCodigo);
+            cuenta.setFechaExpiracionCodigo(LocalDateTime.now().plusMinutes(10)); // Expira en 10 minutos
+            cuentaRepository.save(cuenta);
+
+            // Enviar el nuevo código al correo
+            String asunto = "Nuevo Código de Validación";
+            String cuerpo = "Tu nuevo código de validación es: " + nuevoCodigo;
+            EmailDTO emailDTO = new EmailDTO(asunto, cuerpo, validarCodigoDTO.email());
+            emailService.enviarCorreo(emailDTO);
+
+            throw new CuentaException("El código de verificación ha expirado. Se ha enviado un nuevo código.");
+        }
+
         // Comparar el código enviado con el código almacenado
         if (!cuenta.getCodigoVerificacionRegistro().equals(validarCodigoDTO.codigo())) {
             throw new CuentaException("El código de verificación es incorrecto.");
         }
 
-        // Si el código es correcto, activar la cuenta
+        // Si el código es correcto y no ha expirado, activar la cuenta
         cuenta.setEstado(EstadoCuenta.ACTIVO);
         cuenta.setCodigoVerificacionRegistro(null);
+        cuenta.setFechaExpiracionCodigo(null);
         cuentaRepository.save(cuenta);
 
         cuponBienvenida(cuenta.getEmail());
@@ -265,6 +284,7 @@ public class CuentaServiceImp implements CuentaService {
 
         // Guardar el código en la cuenta (o en un lugar seguro relacionado con la cuenta)
         cuentaExistente.setCodigoVerificacionContrasenia(codigoRecuperacion);
+        cuentaExistente.setFechaExpiracionCodigoContrasenia(LocalDateTime.now().plusMinutes(10));
         cuentaRepository.save(cuentaExistente);
 
         // Enviar el código de validación al correo
@@ -276,11 +296,26 @@ public class CuentaServiceImp implements CuentaService {
 
     @Override
     public void cambiarPassword(CambiarPasswordDTO cambiarPasswordDTO) throws CuentaException {
-        // Buscar la cuenta que contiene el código de verificación
-        Optional<Cuenta> optionalCuenta = cuentaRepository.existBycodigoVerificacionContrasenia(cambiarPasswordDTO.codigoVerificacion());
+        // Buscar la cuenta usando el nuevo metodo
+        Cuenta cuenta = cuentaRepository.findByCodigoVerificacionContrasenia(cambiarPasswordDTO.codigoVerificacion())
+                .orElseThrow(() -> new CuentaException("Código de verificación inválido o expirado."));
 
-        // Si la cuenta no existe, lanzar excepción
-        Cuenta cuenta = optionalCuenta.orElseThrow(() -> new CuentaException("Código de verificación inválido o expirado."));
+        // Verificar si el código ha expirado
+        if (cuenta.getFechaExpiracionCodigoContrasenia() != null && LocalDateTime.now().isAfter(cuenta.getFechaExpiracionCodigoContrasenia())) {
+            // El código ha expirado, genera uno nuevo
+            String nuevoCodigo = generarCodigoValidacion();
+            cuenta.setCodigoVerificacionContrasenia(nuevoCodigo);
+            cuenta.setFechaExpiracionCodigoContrasenia(LocalDateTime.now().plusMinutes(10)); // Expira en 10 minutos
+            cuentaRepository.save(cuenta);
+
+            // Enviar el nuevo código al correo
+            String asunto = "Nuevo Código de Recuperación";
+            String cuerpo = "Tu nuevo código de recuperación de contraseña es: " + nuevoCodigo;
+            EmailDTO emailDTO = new EmailDTO(asunto, cuerpo, cuenta.getEmail());
+            emailService.enviarCorreo(emailDTO);
+
+            throw new CuentaException("El código de recuperación ha expirado. Se ha enviado un nuevo código.");
+        }
 
         // Verificar que el código de verificación sea el mismo que el enviado
         if (!cuenta.getCodigoVerificacionContrasenia().equals(cambiarPasswordDTO.codigoVerificacion())) {
@@ -288,16 +323,16 @@ public class CuentaServiceImp implements CuentaService {
         }
 
         // Actualizar la contraseña con la nueva contraseña proporcionada
-        cuenta.setPassword(cambiarPasswordDTO.passwordNueva());
-        String encrptar = encriptarPassword(cambiarPasswordDTO.passwordNueva());
-        cuenta.setPassword(encrptar);
+        cuenta.setPassword(encriptarPassword(cambiarPasswordDTO.passwordNueva()));
 
-        // Limpiar el código de verificación después de cambiar la contraseña
+        // Limpiar el código de verificación y la fecha de expiración después de cambiar la contraseña
         cuenta.setCodigoVerificacionContrasenia(null);
+        cuenta.setFechaExpiracionCodigoContrasenia(null);
 
         // Guardar los cambios en la base de datos
         cuentaRepository.save(cuenta);
     }
+
 
     @Override
     public TokenDTO iniciarSesion(LoginDTO loginDTO)  throws CuentaException {
