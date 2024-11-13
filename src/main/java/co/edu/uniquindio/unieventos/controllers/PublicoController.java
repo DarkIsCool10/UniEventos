@@ -11,6 +11,7 @@ import co.edu.uniquindio.unieventos.dto.evento.FiltroEventoDTO;
 import co.edu.uniquindio.unieventos.dto.evento.ItemEventoDTO;
 import co.edu.uniquindio.unieventos.exceptions.*;
 import co.edu.uniquindio.unieventos.model.documents.Cupon;
+import co.edu.uniquindio.unieventos.model.documents.Evento;
 import co.edu.uniquindio.unieventos.service.service.CuentaService;
 import co.edu.uniquindio.unieventos.service.service.CuponService;
 import co.edu.uniquindio.unieventos.service.service.EmailService;
@@ -115,6 +116,12 @@ public class PublicoController {
     public ResponseEntity<MensajeDTO<List<ItemEventoDTO>>> listarEventos() throws EventoException {
         List<ItemEventoDTO> eventos = eventoService.listarEventos();
         return ResponseEntity.ok(new MensajeDTO<>(false, eventos));
+    }
+
+    @GetMapping("/obtener-evento/{id}")
+    public ResponseEntity<MensajeDTO<Evento>> obtenerInfoEvento(@Valid @PathVariable String id) throws EventoException {
+        Evento info = eventoService.obtenerInformacionEvento(id);
+        return ResponseEntity.ok(new MensajeDTO<>(true, info ));
     }
 
 }

@@ -81,12 +81,6 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/obtener-evento/{id}")
-    public ResponseEntity<MensajeDTO<Evento>> obtenerInfoEvento(@Valid @PathVariable String id) throws EventoException {
-        Evento info = eventoService.obtenerInformacionEvento(id);
-        return ResponseEntity.ok(new MensajeDTO<>(true, info ));
-    }
-
 //    @GetMapping("/obtener-localidad/{nombre}")
 //    public ResponseEntity<MensajeDTO<Localidad>> obtenerLocalidad(@Valid @PathVariable String nombre) throws EventoException {
 //        Localidad info = eventoService.obtenerLocalidadPorNombre(nombre);
