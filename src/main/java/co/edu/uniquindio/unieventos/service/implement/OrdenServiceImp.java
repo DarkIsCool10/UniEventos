@@ -13,6 +13,7 @@ import co.edu.uniquindio.unieventos.model.vo.DetalleOrden;
 import co.edu.uniquindio.unieventos.model.vo.Localidad;
 import co.edu.uniquindio.unieventos.model.vo.Pago;
 import co.edu.uniquindio.unieventos.repository.CarritoRepository;
+import co.edu.uniquindio.unieventos.repository.EventoRepository;
 import co.edu.uniquindio.unieventos.repository.OrdenRepository;
 import co.edu.uniquindio.unieventos.service.service.*;
 import com.mercadopago.MercadoPagoConfig;
@@ -46,6 +47,7 @@ public class OrdenServiceImp implements OrdenService {
     private final CarritoRepository carritoRepository;
     private final CuentaService cuentaService;
     private final CuponService cuponService;
+    private final EventoRepository eventoRepository;
 
     @Override
     public void crearOrdenDesdeCarrito(String idCliente, String codigoCupon, String codigoPasarela) throws OrdenException, CarritoException, CuponException {
@@ -62,6 +64,22 @@ public class OrdenServiceImp implements OrdenService {
         // Convertir los detalles del carrito a detalles de la orden
         List<DetalleOrdenDTO> detallesOrdenDTO = convertirCarritoADetalleOrdenDTO(carrito.getItems());
 
+        // Obtener el evento y la fecha del evento (en este caso, tomamos el primer ítem)
+        DetalleOrdenDTO detalleOrdenDTO = detallesOrdenDTO.get(0);
+        Evento evento = eventoService.obtenerInformacionEvento(detalleOrdenDTO.idEvento());
+
+        if (evento == null) {
+            throw new EventoException("No se encontró el evento con el ID: " + detalleOrdenDTO.idEvento());
+        }
+
+        // Verificar si la compra se realiza al menos dos días antes del evento
+        LocalDate fechaEvento = evento.getFecha(); // Fecha del evento
+        LocalDate fechaLimiteCompra = fechaEvento.minusDays(2); // Fecha límite para comprar entradas
+
+        if (LocalDate.now().isAfter(fechaLimiteCompra)) {
+            throw new OrdenException("Las entradas solo pueden ser compradas hasta dos días antes del evento.");
+        }
+
         // Calcular el total de la orden
         double totalOrden = calcularTotalOrden(detallesOrdenDTO, codigoCupon, LocalDateTime.now());
 
@@ -77,6 +95,32 @@ public class OrdenServiceImp implements OrdenService {
         // Llamar al método que crea la orden
         crearOrden(ordenDTO, totalOrden);
     }
+
+    // Método para reducir las entradas disponibles en las localidades
+    private void reducirEntradasEnLocalidades(List<DetalleOrdenDTO> detallesOrdenDTO) throws OrdenException {
+        for (DetalleOrdenDTO detalle : detallesOrdenDTO) {
+            // Obtener el evento
+            Evento evento = eventoService.obtenerInformacionEvento(detalle.idEvento());
+
+            // Encontrar la localidad dentro del evento
+            Localidad localidad = evento.getLocalidades().stream()
+                    .filter(loc -> loc.getNombre().equals(detalle.nombreLocalidad()))
+                    .findFirst()
+                    .orElseThrow(() -> new EventoException("No se encontró la localidad: " + detalle.nombreLocalidad()));
+
+            // Verificar si hay suficientes entradas en la localidad
+            if (localidad.getCapacidadMaxima() < detalle.cantidad()) {
+                throw new OrdenException("No hay suficientes entradas disponibles para la localidad: " + detalle.nombreLocalidad());
+            }
+
+            // Restar las entradas
+            localidad.setCapacidadMaxima(localidad.getCapacidadMaxima() - detalle.cantidad());
+
+            // Guardar el evento actualizado
+            eventoRepository.save(evento);
+        }
+    }
+
 
 
     // Convierte los ítems del carrito a DetalleOrdenDTO
@@ -190,7 +234,6 @@ public class OrdenServiceImp implements OrdenService {
 
         return total;
     }
-
 
     // Obtener una orden por ID
     @Override

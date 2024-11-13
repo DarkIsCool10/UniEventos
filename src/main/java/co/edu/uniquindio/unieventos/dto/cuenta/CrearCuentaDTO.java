@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 public record CrearCuentaDTO(
         @NotBlank(message = "La cédula es requerida")
-        @Length(max = 10, message = "La cédula debe tener un máximo de 10 caracteres")
+        @Length(min = 10 ,max = 10, message = "La cédula debe tener un máximo de 10 caracteres")
         @Pattern(regexp = "\\d+", message = "La cédula solo debe contener números")//La expresión regular \\d+ en @Pattern asegura que la cédula solo contenga dígitos
         String cedula,
 
