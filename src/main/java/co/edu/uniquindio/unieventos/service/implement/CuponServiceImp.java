@@ -159,6 +159,20 @@ public class CuponServiceImp implements CuponService{
         return itemsCuponDTO;
     }
 
+    public List<InformacionCuponDTO> obtenerTodosLosCupones() {
+        List<Cupon> cupones = cuponRepository.findAll();
+        return cupones.stream()
+                .map(cupon -> new InformacionCuponDTO(
+                        cupon.getNombre(),
+                        cupon.getCodigo(),
+                        cupon.getDescuento(),
+                        cupon.getFechaApertura(),
+                        cupon.getFechaVencimiento(),
+                        cupon.getTipo(),
+                        cupon.getEstado()))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public Cupon aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException {
         // Buscar el cupón por código

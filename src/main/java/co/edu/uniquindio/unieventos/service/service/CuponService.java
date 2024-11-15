@@ -21,6 +21,8 @@ public interface CuponService {
 
     InformacionCuponDTO obtenerInformacionCupon(String id) throws CuponException;
 
+    List<InformacionCuponDTO> obtenerTodosLosCupones();
+
     List<ItemsCuponDTO> obtenerCuponesFiltrados(ItemsCuponDTO itemCuponDTO);
 
     Cupon aplicarCupon(String codigoCupon, LocalDateTime fechaCompra) throws CuponException;

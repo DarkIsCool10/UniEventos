@@ -168,6 +168,12 @@ public class AdminController {
         return ResponseEntity.ok(cuponInfo);
     }
 
+    @GetMapping("/cupones")
+    public ResponseEntity<MensajeDTO<List<InformacionCuponDTO>>> obtenerTodosLosCupones() {
+            List<InformacionCuponDTO> cupones = cuponService.obtenerTodosLosCupones();
+            return ResponseEntity.ok(new MensajeDTO<>(true, cupones));
+    }
+
     @PostMapping("/filtrar-cupones")
     public ResponseEntity<List<ItemsCuponDTO>> obtenerCuponesFiltrados(@RequestBody ItemsCuponDTO itemCuponDTO) {
         List<ItemsCuponDTO> cuponesFiltrados = cuponService.obtenerCuponesFiltrados(itemCuponDTO);

@@ -176,6 +176,7 @@ public class EventoServiceImp implements EventoService {
 
         for (Evento evento : eventos) {
             itemEventoDTO.add(new ItemEventoDTO(
+                    evento.getId(),
                     evento.getImagenPortada(),
                     evento.getNombre(),
                     evento.getTipo(),
