@@ -46,6 +46,7 @@ public class EventoServiceImp implements EventoService {
             nuevoEvento.setDescripcion(crearEventoDTO.descripcion());
             nuevoEvento.setDireccion(crearEventoDTO.direccion());
             nuevoEvento.setTipo(crearEventoDTO.tipoEvento());
+            nuevoEvento.setEstado(EstadoEvento.ACTIVO);
             nuevoEvento.setFecha(crearEventoDTO.fecha());
             nuevoEvento.setCiudad(crearEventoDTO.ciudad());
 
