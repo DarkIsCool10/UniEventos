@@ -2,7 +2,10 @@ package co.edu.uniquindio.unieventos.repository;
 
 import co.edu.uniquindio.unieventos.dto.evento.ObtenerEventoDTO;
 import co.edu.uniquindio.unieventos.model.documents.Evento;
+import co.edu.uniquindio.unieventos.model.enums.EstadoEvento;
 import co.edu.uniquindio.unieventos.model.vo.Localidad;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,6 +20,8 @@ public interface EventoRepository extends MongoRepository<Evento, String> {
 
     //Metodo para encontrar un evento por nombre
     Optional<Evento> findByNombre(String nombre);
+
+    Page<Evento> getEventosByEstado(EstadoEvento estadoEvento, Pageable pageable);
 
     //Metodo para contar eventos por ciudad
     long countByCiudad(String ciudad);

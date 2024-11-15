@@ -6,6 +6,8 @@ import co.edu.uniquindio.unieventos.model.documents.Evento;
 import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
 import co.edu.uniquindio.unieventos.model.vo.Localidad;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 
@@ -16,7 +18,7 @@ public interface EventoService {
 
     void crearEvento(CrearEventoDTO crearEventoDTO) throws EventoException;
 
-    void editarEvento(EditarEventoDTO editarEventoDTO) throws EventoException;
+    void editarEvento(String id,EditarEventoDTO editarEventoDTO) throws EventoException;
 
     void eliminarEvento(String id) throws EventoException;
 
@@ -25,6 +27,10 @@ public interface EventoService {
     //Localidad obtenerLocalidadPorNombre(String nombre) throws EventoException;
 
     List<ItemEventoDTO> listarEventos();
+
+    Page<ItemEventoDTO> getEventoActivos(Pageable pageable);
+
+    Page<ItemEventoDTO> getEventosInactivos(Pageable pageable);
 
     public List<EventoFiltradoDTO> filtrarEventos(FiltroEventoDTO filtroEventoDTO);
 

@@ -5,6 +5,8 @@ import co.edu.uniquindio.unieventos.exceptions.CuponException;
 import co.edu.uniquindio.unieventos.model.documents.Cupon;
 import co.edu.uniquindio.unieventos.model.enums.EstadoCupon;
 import co.edu.uniquindio.unieventos.model.enums.TipoCupon;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,7 +23,9 @@ public interface CuponService {
 
     InformacionCuponDTO obtenerInformacionCupon(String id) throws CuponException;
 
-    List<InformacionCuponDTO> obtenerTodosLosCupones();
+    Page<Cupon> getAllDisponibles(PageRequest pageRequest);
+
+    Page<Cupon> getAllNoDisponibles(PageRequest pageRequest);
 
     List<ItemsCuponDTO> obtenerCuponesFiltrados(ItemsCuponDTO itemCuponDTO);
 

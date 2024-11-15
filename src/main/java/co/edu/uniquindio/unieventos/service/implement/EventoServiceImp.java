@@ -9,6 +9,8 @@ import co.edu.uniquindio.unieventos.repository.EventoRepository;
 import co.edu.uniquindio.unieventos.service.service.EventoService;
 import co.edu.uniquindio.unieventos.service.service.ImagesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +46,6 @@ public class EventoServiceImp implements EventoService {
             nuevoEvento.setDescripcion(crearEventoDTO.descripcion());
             nuevoEvento.setDireccion(crearEventoDTO.direccion());
             nuevoEvento.setTipo(crearEventoDTO.tipoEvento());
-            nuevoEvento.setEstado(crearEventoDTO.estadoEvento());
             nuevoEvento.setFecha(crearEventoDTO.fecha());
             nuevoEvento.setCiudad(crearEventoDTO.ciudad());
 
@@ -83,9 +84,9 @@ public class EventoServiceImp implements EventoService {
      * @throws EventoException
      */
     @Override
-    public void editarEvento(EditarEventoDTO editarEventoDTO) throws EventoException {
+    public void editarEvento(String id,EditarEventoDTO editarEventoDTO) throws EventoException {
 
-        Optional<Evento> optionalEvento = obtenerEventoPorId(editarEventoDTO.id());
+        Optional<Evento> optionalEvento = obtenerEventoPorId(id);
 
         if (optionalEvento.isEmpty()) {
             throw new EventoException("No existe este evento");
@@ -186,6 +187,44 @@ public class EventoServiceImp implements EventoService {
             ));
         }
         return itemEventoDTO;
+    }
+
+    @Override
+    public Page<ItemEventoDTO> getEventosInactivos(Pageable pageable){
+        Page<Evento> eventos = eventoRepo.getEventosByEstado(EstadoEvento.INACTIVO, pageable);
+
+        // Transformar cada Evento en un ItemEventoDTO
+
+        return eventos.map(evento -> new ItemEventoDTO(
+                evento.getId(),
+                evento.getImagenPortada(),
+                evento.getNombre(),
+                evento.getTipo(),
+                evento.getFecha(),
+                evento.getDireccion(),
+                evento.getCiudad()
+        ));
+    }
+
+    /**
+     *  Metodo para obtener solamente los eventos que se encuentran activo ahora mismo para el index de los usuarios
+     * @return
+     */
+    @Override
+    public Page<ItemEventoDTO> getEventoActivos(Pageable pageable){
+        Page<Evento> eventos = eventoRepo.getEventosByEstado(EstadoEvento.ACTIVO, pageable);
+
+        // Transformar cada Evento en un ItemEventoDTO
+
+        return eventos.map(evento -> new ItemEventoDTO(
+                evento.getId(),
+                evento.getImagenPortada(),
+                evento.getNombre(),
+                evento.getTipo(),
+                evento.getFecha(),
+                evento.getDireccion(),
+                evento.getCiudad()
+        ));
     }
 
     @Override

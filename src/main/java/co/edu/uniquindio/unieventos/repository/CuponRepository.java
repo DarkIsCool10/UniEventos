@@ -3,6 +3,8 @@ package co.edu.uniquindio.unieventos.repository;
 import co.edu.uniquindio.unieventos.model.documents.Cupon;
 import co.edu.uniquindio.unieventos.model.enums.EstadoCupon;
 import co.edu.uniquindio.unieventos.model.enums.TipoCupon;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,4 +24,5 @@ public interface CuponRepository extends MongoRepository<Cupon, String> {
     List<Cupon> findByTipo(TipoCupon tipo);
     List<Cupon> findByEstado(EstadoCupon estado);
     Cupon findByCodigo(String codigo);
+    Page<Cupon> findByEstado(EstadoCupon estado, Pageable pageable);
 }

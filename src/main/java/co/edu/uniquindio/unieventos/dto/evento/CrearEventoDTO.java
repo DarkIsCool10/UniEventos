@@ -27,9 +27,6 @@ public record CrearEventoDTO(
         @NotNull(message = "El tipo de evento es obligatorio.")
         TipoEvento tipoEvento,
 
-        @NotNull(message = "El estado del evento es obligatorio.")
-        EstadoEvento estadoEvento,
-
         @NotNull(message = "La fecha del evento es obligatoria.")
         LocalDate fecha,
 

@@ -11,8 +11,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record EditarEventoDTO(
-        @NotNull(message = "Evento no encontrado")
-        String id,
+        //@NotNull(message = "Evento no encontrado")
+        //String id,
 
         @NotBlank(message = "Debe agregar un nombre a el evento")
         @Length(min= 5, max=100,message = "El evento debe tener un nombre maximo a 100 caracteres")

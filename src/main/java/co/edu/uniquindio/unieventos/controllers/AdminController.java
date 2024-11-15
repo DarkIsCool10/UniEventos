@@ -11,6 +11,7 @@ import co.edu.uniquindio.unieventos.dto.evento.*;
 import co.edu.uniquindio.unieventos.exceptions.CuponException;
 import co.edu.uniquindio.unieventos.exceptions.EventoException;
 import co.edu.uniquindio.unieventos.exceptions.PQRException;
+import co.edu.uniquindio.unieventos.model.documents.Cupon;
 import co.edu.uniquindio.unieventos.model.documents.Evento;
 import co.edu.uniquindio.unieventos.model.enums.TipoEvento;
 import co.edu.uniquindio.unieventos.model.vo.Localidad;
@@ -26,6 +27,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,10 +64,10 @@ public class AdminController {
         }
     }
 
-    @PutMapping("/editar-evento")
-    public ResponseEntity<MensajeDTO<String>> editarEvento(@Valid @RequestBody EditarEventoDTO eventoDTO) throws EventoException {
+    @PutMapping("/editar-evento/{id}")
+    public ResponseEntity<MensajeDTO> editarEvento(@PathVariable("id") String id, @Valid @RequestBody EditarEventoDTO eventoDTO) throws EventoException {
         try{
-            eventoService.editarEvento(eventoDTO);
+            eventoService.editarEvento(id,eventoDTO);
             return ResponseEntity.ok(new MensajeDTO<>(true, "Evento modificado exitosamente"));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
@@ -79,6 +82,23 @@ public class AdminController {
         }catch (Exception e){
             return ResponseEntity.badRequest().body(new MensajeDTO<>(false, e.getMessage()));
         }
+    }
+
+    @GetMapping("/evento-activos")
+    public ResponseEntity<Page<ItemEventoDTO>> getEventosActivos(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "3") int size){
+        PageRequest pageRequest= PageRequest.of(page, size);
+        Page<ItemEventoDTO> eventos = eventoService.getEventoActivos(pageRequest);
+        return ResponseEntity.ok(eventos);
+    }
+
+    @GetMapping("/evento-inactivos")
+    public ResponseEntity<Page<ItemEventoDTO>> getEventosInactivos(@RequestParam(defaultValue = "0") int page,
+                                                                   @RequestParam(defaultValue = "3") int size){
+        PageRequest pageRequest= PageRequest.of(page, size);
+        Page<ItemEventoDTO> eventos = eventoService.getEventosInactivos(pageRequest);
+        return ResponseEntity.ok(eventos);
+
     }
 
 //    @GetMapping("/obtener-localidad/{nombre}")
@@ -168,10 +188,20 @@ public class AdminController {
         return ResponseEntity.ok(cuponInfo);
     }
 
-    @GetMapping("/cupones")
-    public ResponseEntity<MensajeDTO<List<InformacionCuponDTO>>> obtenerTodosLosCupones() {
-            List<InformacionCuponDTO> cupones = cuponService.obtenerTodosLosCupones();
-            return ResponseEntity.ok(new MensajeDTO<>(true, cupones));
+    @GetMapping("/cupones-disponibles")
+    public ResponseEntity<Page<Cupon>> getAllDisponibles(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "4") int size){
+        PageRequest pageRequest= PageRequest.of(page, size);
+        Page<Cupon> cupones = cuponService.getAllDisponibles(pageRequest);
+        return ResponseEntity.ok(cupones);
+    }
+
+    @GetMapping("/cupones-no-disponibles")
+    public ResponseEntity<Page<Cupon>> getAllNoDisponibles(@RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "4") int size){
+        PageRequest pageRequest= PageRequest.of(page, size);
+        Page<Cupon> cupones = cuponService.getAllNoDisponibles(pageRequest);
+        return ResponseEntity.ok(cupones);
     }
 
     @PostMapping("/filtrar-cupones")

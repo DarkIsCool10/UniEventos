@@ -68,14 +68,13 @@ public class EventoServiceTest {
 
         // Crear un DTO de edición con los nuevos datos
         EditarEventoDTO editarEventoDTO = new EditarEventoDTO();
-        editarEventoDTO.id();
         editarEventoDTO.nombre();
         editarEventoDTO.descripcion();
         editarEventoDTO.estadoEvento();
         // Aquí puedes añadir más datos si es necesario, como localidades, imágenes, etc.
 
         // Editar el evento
-        eventoService.editarEvento(editarEventoDTO);
+        eventoService.editarEvento(,editarEventoDTO);
 
         // Verificar que el evento se ha modificado correctamente
         Evento eventoActualizado = eventoRepository.findById("1").orElseThrow();

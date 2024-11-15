@@ -12,6 +12,8 @@ import co.edu.uniquindio.unieventos.repository.CuponRepository;
 import co.edu.uniquindio.unieventos.service.service.CuponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
@@ -159,18 +161,13 @@ public class CuponServiceImp implements CuponService{
         return itemsCuponDTO;
     }
 
-    public List<InformacionCuponDTO> obtenerTodosLosCupones() {
-        List<Cupon> cupones = cuponRepository.findAll();
-        return cupones.stream()
-                .map(cupon -> new InformacionCuponDTO(
-                        cupon.getNombre(),
-                        cupon.getCodigo(),
-                        cupon.getDescuento(),
-                        cupon.getFechaApertura(),
-                        cupon.getFechaVencimiento(),
-                        cupon.getTipo(),
-                        cupon.getEstado()))
-                .collect(Collectors.toList());
+    @Override
+    public Page<Cupon> getAllDisponibles(PageRequest pageRequest){
+        return cuponRepository.findByEstado(EstadoCupon.DISPONIBLE,pageRequest);
+    }
+    @Override
+    public Page<Cupon> getAllNoDisponibles(PageRequest pageRequest){
+        return cuponRepository.findByEstado(EstadoCupon.NO_DISPONIBLE,pageRequest);
     }
 
     @Override
