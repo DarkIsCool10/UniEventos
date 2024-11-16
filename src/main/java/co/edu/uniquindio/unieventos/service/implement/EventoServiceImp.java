@@ -152,7 +152,7 @@ public class EventoServiceImp implements EventoService {
         }
 
         Evento evento = optionalEvento.get();
-        evento.setEstado(EstadoEvento.ELIMINADO);
+        evento.setEstado(EstadoEvento.INACTIVO);
 
         eventoRepo.save(evento);
     }
